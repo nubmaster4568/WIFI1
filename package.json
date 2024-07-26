@@ -1,0 +1,26 @@
+{
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "description": "Your project description",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "*",
+    "cors": "*",
+    "express": "*",
+    "formidable": "*",
+    "multer": "*",
+    "pg": "*",
+    "sharp": "*",
+    "telegraf": "*"
+  },
+  "devDependencies": {
+    "sqlite3": "*"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "license": "MIT"
+}
