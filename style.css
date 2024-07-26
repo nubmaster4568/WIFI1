@@ -1,0 +1,1033 @@
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #151515;
+}
+.sections {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #151515;
+}
+.navbar {
+    display: flex;
+    justify-content: space-around; /* Aligns items to the right */
+    align-items: center; /* Centers items vertically if needed */
+    padding: 10px;
+    background-color: #25272e;
+    border-radius: 15px;
+    margin: 10px; /* Optional: Adds padding around the navbar */
+}
+
+/* Style for the button */
+.blue-balance {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: space-around; /* Center items horizontally */
+    background-color: rgb(0, 122, 255);
+    width: 150px;
+    height: 50px;
+    border: none; /* Removes default border */
+    color: white; /* Sets text color to white */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    font-size: 16px;
+    border-radius: 12px; 
+    padding: 0 10px; /* Adds padding inside the button */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+}
+
+/* Adjust font size if needed */
+.balance-text {
+    font-size: 30px;
+    padding: 10px;
+    color: white; /* Optional: Adds padding around the navbar */
+}
+.banner {
+    width: 95%;
+    height: 100px; /* Adjust this height based on the content */
+    background: linear-gradient(135deg, rgb(138, 94, 36) 0%, rgb(238, 148, 52) 100%);
+    margin: 10px auto;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+
+.banner-images {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 300%; /* Adjust based on the number of images */
+}
+
+.banner-item {
+    flex: 0 0 100%;
+    height: 100%; /* Ensure full height of banner */
+    box-sizing: border-box;
+    display: flex; /* Align content inside banner-item */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+}
+
+.css-11ktyzx {
+    color: white;
+    position: relative;
+    background: linear-gradient(135deg, rgb(138, 73, 36) 0%, rgb(238, 142, 52) 100%);
+    border-radius: 4px;
+    padding: 30px; /* Adjust based on your content */
+    height: 100%; /* Make it fit the banner-item */
+    width: 100%; /* Make it fit the banner-item */
+    box-sizing: border-box; /* Include padding in width and height calculations */
+    display: flex; /* Flexbox for aligning content */
+ /* Center text inside */
+    overflow: hidden;
+}
+.css-11ktyzx1 {
+    color: white;
+    position: relative;
+    background: linear-gradient(135deg, rgb(36, 39, 138) 0%, rgb(52, 74, 238) 100%);
+    border-radius: 4px;
+    padding: 30px; /* Adjust based on your content */
+    height: 100%; /* Make it fit the banner-item */
+    width: 100%; /* Make it fit the banner-item */
+    box-sizing: border-box; /* Include padding in width and height calculations */
+    display: flex; /* Flexbox for aligning content */
+ /* Center text inside */
+    overflow: hidden;
+}
+
+.css-11ktyzx::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 168px;
+    bottom: 0;
+    right: 0;
+    background-image: url(weed-png-113-1.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+.css-11ktyzx1::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(img/meth.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+.css-11ktyzx2::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(img/Tobacco.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+
+.banner-images img {
+    width: 100%;
+    height: 100%; /* Ensure images fill the height of their container */
+    object-fit: cover;
+}
+
+.dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+/* Style for selected buttons */
+.banner-button.selected {
+    background: #2980b9;
+    /* Darker blue or any color you prefer */
+}
+
+/* Style for product-type buttons (add selected state if needed) */
+.product-type.meth.selected {
+    background: #1b5379 !important;  /* Darker blue or any color you prefer */
+}
+/* Style for product-type buttons (add selected state if needed) */
+.product-type.weed.selected {
+    background: #217d21 !important;  /* Darker blue or any color you prefer */
+}
+.product-type.shok.selected {
+    background: #7a531e !important;  /* Darker blue or any color you prefer */
+}
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dot.active {
+    background-color: white;
+}
+
+
+.banner2 {
+    width: 95%;
+    background-color: #25272e;
+    margin: 10px auto;
+    border-radius: 15px;
+    overflow: hidden; /* Hide overflow for initial state */
+    position: relative; /* Position relative to contain the expand button */
+    max-height: 300px; /* Adjust this value based on the number of visible buttons */
+    transition: max-height 0.3s ease; /* Smooth transition for expanding */
+}
+
+/* When expanded, set max-height to accommodate all buttons */
+.banner2.expanded {
+    max-height: 1000px; /* Large enough to show all buttons; adjust as needed */
+}
+
+
+
+.css-11ktyzx {
+    color: white;
+    position: relative;
+    background: linear-gradient(135deg, rgb(36, 138, 61) 0%, rgb(52, 238, 80) 100%);
+    border-radius: 4px;
+    padding: 39px 16px;
+    height: 168px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.css-11ktyzx2 {
+    color: white;
+    position: relative;
+    background: linear-gradient(135deg, rgb(138, 73, 36) 0%, rgb(238, 142, 52) 100%);
+    border-radius: 4px;
+    padding: 30px; /* Adjust based on your content */
+    height: 100%; /* Make it fit the banner-item */
+    width: 100%; /* Make it fit the banner-item */
+    box-sizing: border-box; /* Include padding in width and height calculations */
+    display: flex; /* Flexbox for aligning content */
+ /* Center text inside */
+    overflow: hidden;
+}
+.css-16a12ag {
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 40px;
+    margin-bottom: 8px;
+}
+.css-10kwzia {
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 24px;
+}
+.css-11ktyzx::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 168px;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(img/weed-png-113-1.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+.expand-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #3498db; /* Adjust as needed */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+.button-container {
+    padding: 10px;
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust grid columns */
+    gap: 20px; /* Space between buttons */
+    align-items: center; /* Centers buttons vertically */
+    justify-items: center; /* Centers buttons horizontally */
+    height: 100%; /* Makes container fill the banner */
+    max-height: 200px; /* Set a fixed height to make it scrollable */
+    overflow-y: auto; /* Enable vertical scrolling */
+    position: relative; /* Position relative to contain the shadow and gradient */
+}
+
+
+
+.banner-button {
+    width: 100px;
+    outline:1px white;
+    background: rgba(63, 71, 94, 0.6);
+    border: none; /* Removes default border */
+    color: white; /* White text */
+    padding: 10px 20px; /* Adds padding */
+    font-size: 10px; /* Sets font size */
+    border-radius: 5px; /* Rounds corners */
+    cursor: pointer; /* Changes cursor on hover */
+    transition: background-color 0.3s ease;
+    box-shadow: rgb(61, 71, 99) 0px 3px;
+    pointer-events: auto;
+    transition: background-color 0.3s ease, opacity 10s ease; /* Combined transition properties */
+    /* Ensure buttons are clickable */
+    /* Smooth background color transition */
+}
+.banner3 {
+    position: relative; /* Ensure the overlay is positioned relative to this container */
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 10px; /* Space between buttons */
+    height: auto; /* Adjust height automatically based on content */
+    width: 95%;
+    background-color: rgba(37, 39, 46); /* #25272e with 0.5 opacity */
+    margin: 10px auto;
+    border-radius: 15px;
+    padding: 10px 0px;
+}
+.css-1lgem63 {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    line-height: 1em;
+    flex-shrink: 0;
+    color: currentcolor;
+    vertical-align: middle;
+    fill: none;
+    position: absolute;
+    top: 7px;
+    right: 7px;
+}
+
+.banner3::after {
+    border-radius: 15px;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(37, 39, 46, 0.5); /* #25272e with 0.5 opacity */
+    transition: opacity 0.3s ease;
+    opacity: 1; /* Overlay visible initially */
+    z-index: 1; /* Ensure overlay is on top */
+    pointer-events: auto; /* Ensure overlay intercepts clicks */
+}
+
+.banner3.visible::after {
+    opacity: 0; /* Hide the overlay */
+    pointer-events: none; /* Allow clicks to pass through */
+}
+/* General styles for the deposit-content */
+/* General styles for the deposit-content */
+.deposit-content {
+    display: flex;                /* Enable flexbox layout */
+    flex-direction: column;       /* Stack children vertically */
+    align-items: center;          /* Center items horizontally */
+    justify-content: flex-start;  /* Align items to the top */
+    height: 100vh;                /* Full viewport height */
+    text-align: center;           /* Center text */
+    padding-top: 20px;            /* Add some padding from the top */
+}
+
+/* Additional styling for the deposit-text */
+.deposit-text {
+    color: white;
+    font-size: 24px;              /* Font size for the text */
+    font-weight: bold;            /* Bold text */
+    margin: 0;                    /* Remove default margin */
+}
+
+
+.product-type {
+    background: linear-gradient(135deg, rgb(48, 48, 48) 0%, rgb(70, 70, 70) 100%);
+    border: none; /* Removes default border */
+    color: white; /* White text */
+    padding: 10px 30px; /* Adds padding */
+    border-radius: 5px; /* Rounds corners */
+    cursor: pointer; /* Changes cursor on hover */
+    transition: background-color 0.3s ease;
+    box-shadow: rgb(83, 83, 83) 0px 2px; /* Adds shadow */
+    display: flex; /* Use flexbox to center content */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    text-align: center;
+    margin: 0; /* Reset margin */
+}
+
+.product-type.weed {
+    background: linear-gradient(135deg, rgb(36, 138, 61) 0%, rgb(52, 238, 80) 100%);
+    /* Green gradient background for weed type */
+}
+.product-type.meth {
+    background: linear-gradient(135deg, rgb(36, 39, 138) 0%, rgb(52, 74, 238) 100%);
+    /* Green gradient background for weed type */
+}
+.product-type.shok {
+    background: linear-gradient(135deg, rgb(138, 73, 36) 0%, rgb(238, 142, 52) 100%);
+    /* Green gradient background for weed type */
+}
+.product-type:hover {
+    background-color: #2980b9; /* Darker color on hover */
+}
+.button-container .banner-button:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i)); /* Delay for each button */
+}
+.banner-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+.button-container .banner-button {
+    opacity: 0; /* Initial state for animation */
+    transform: translateY(20px); /* Initial state for animation */
+    animation: fadeIn 0.5s forwards; /* Apply animation */
+}
+
+
+.banner-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+
+
+.banner3.visible::after {
+    opacity: 0; /* Hide the overlay */
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+
+
+
+
+
+
+.product-item.status-off {
+    position: relative;
+    opacity: 0.6; /* Make the item appear gray and faded */
+    pointer-events: none; /* Make the item not clickable */
+}
+
+.product-item.status-off .product-status {
+    background-color: rgba(128, 128, 128, 0.5); /* Gray overlay */
+    color: #fff; /* Text color inside the overlay */
+    padding: 5px;
+    border-radius: 3px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.product-item img {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    animation: fadeInUp 0.5s forwards;
+
+}
+
+.product-item .product-name {
+    position: relative;
+    border-radius: 11px;
+    font-weight: 500;
+    left: 0;
+        padding: 5px;
+    background-color: #5757571a;
+}
+.product-menu {
+    margin-top: 20px;
+    position: relative;
+    width: calc(100% - 40px);
+    max-width: 400px;
+    height: 40%;
+    background: rgb(54, 53, 53);
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 15px;
+    padding: 10px;
+}
+.buy-button {
+    background-color: #0056b3;
+    border-radius: 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.product-item .product-weight {
+    position: relative;
+    border-radius: 11px;
+    font-weight: 500;
+    left: 0;
+        padding: 5px;
+    background-color: #5757571a;
+}
+.product-item {
+    background-color: #282828;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    transition: background-color 0.3s;
+    overflow: hidden;
+}
+.product-item:active {
+    background-color: #323232;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+.product-item.status-off .product-item-content {
+    filter: grayscale(100%); /* Optional: Make content grayscale */
+}
+
+.product-item.status-off .buy-button {
+    display: none; /* Hide the buy button if the item is off */
+}
+
+
+
+
+
+
+
+
+/* Wallet block styles */
+.wallet-block {
+    border-radius: 15px;
+    color: white;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #25272e;
+    padding-bottom: 20px;
+    display: inline-block;
+    width: 90%;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.wallet-title2 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    align-self: flex-start;
+    padding-bottom: 15px;
+    color: white;
+}
+.wallet-title {
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    align-self: flex-start;
+    padding-bottom: 15px; /* Align the title to the start (left) */
+}
+
+.wallet-field {
+    display: flex;
+    align-items: center;
+}
+
+.wallet-field input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+}
+
+.wallet-field button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.wallet-field button:hover {
+    background-color: #0056b3;
+}
+
+
+
+.css-ni9hf8 {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(-104px + 100vh);
+}
+.css-14tiaba {
+    padding: 16px;
+    background: rgb(25, 32, 51);
+    border-radius: 16px;
+}
+
+.css-12xb3c3 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    margin-bottom: 16px;
+}
+.css-pv6ryy {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    line-height: 1em;
+    flex-shrink: 0;
+    color: currentcolor;
+    vertical-align: middle;
+    fill: none;
+}
+.css-1rzo072 {
+    align-items: center;
+    height: 50px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 6px;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 10px;
+
+}
+.css-1rzo0722 {
+    align-items: center;
+    height: 50px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 6px;
+    margin: 0 auto;
+    width: 100%;
+    border-radius: 10px;
+
+}
+.css-dni0pk[aria-readonly="true"], .css-dni0pk[readonly], .css-dni0pk[data-readonly] {
+    user-select: all;
+    height: 40px;
+}
+
+.css-dni0pk {
+    width: 100%;
+    min-width: 0px;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    position: relative;
+    appearance: none;
+    
+    height: 48px;
+    background: rgba(49, 61, 94, 0.32);
+    border: 1px solid rgba(49, 61, 94, 0.32);
+    border-radius: 8px;
+    padding: 0px 56px 0px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+
+    --chakra-line-clamp: 1;
+}
+
+.css-1flfxcl {
+    display: inline-flex;
+    appearance: none;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    user-select: none;
+    position: absolute;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    line-height: 20px;
+    font-weight: 600;
+    height: 40px;
+    min-width: unset;
+    font-size: 15px;
+    padding-inline: 20px;
+    padding: unset;
+    top: 4px;
+    right: 4px;
+    flex-shrink: 0;
+    width: 40px;
+    background: rgba(49, 61, 94, 0.3);
+    transition: all 0.2s ease 0s;
+    border-radius: 8px;
+}
+
+.css-8ptgm5 {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    opacity: 0.4;
+    margin-bottom: 16px;
+}
+
+.css-ktc5z7 {
+    cursor: pointer;
+    text-decoration: none;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    display: block;
+    width: 90%;
+    margin: 0 auto;
+    height: 48px;
+    background: rgb(0, 122, 255);
+    box-shadow: rgba(51, 149, 255, 0.08) 0px 6px 20px 0px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    transition: all 0.2s ease 0s;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+.css-1e6ma0l {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+
+.css-ktc5z7 {
+    cursor: pointer;
+    text-decoration: none;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    display: block;
+    height: 48px;
+    background: rgb(0, 122, 255);
+    box-shadow: rgba(51, 149, 255, 0.08) 0px 6px 20px 0px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    transition: all 0.2s ease 0s;
+    margin-bottom: 8px;
+}
+.css-ktc5z2 {
+    margin-top:20px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    display: block;
+    height: 48px;
+    background: rgb(0, 122, 255);
+    box-shadow: rgba(51, 149, 255, 0.08) 0px 6px 20px 0px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    transition: all 0.2s ease 0s;
+    margin-bottom: 8px;
+}
+.css-1e6ma0l {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+*, ::before, ::after {
+    border-color: var(--ton-colors-gray-200);
+    overflow-wrap: break-word;
+}
+
+.css-5p7olr {
+    display: inline-flex;
+    appearance: none;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    user-select: none;
+    position: relative;
+    white-space: nowrap;
+    vertical-align: middle;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    line-height: 20px;
+    border-radius: 8px;
+    font-weight: 600;
+
+    padding-inline: 20px;
+    width: 100%;
+    height: 48px;
+    background: rgba(49, 61, 94, 0.32);
+    font-size: 14px;
+    transition: all 0.2s ease 0s;
+}
+
+.chakra-button {
+    position: absolute; /* Position the button absolutely within the container */
+    right: 10px; /* Adjust this value to position the button inside the input */
+    top: 50%;
+    transform: translateY(-50%); /* Center the button vertically */
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.css-1qm1lh {
+    margin-bottom: 16px;
+}
+
+.css-uusoxa {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(49, 61, 94, 0.3);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.css-y3pmzh {
+    width: 16px;
+    height: 16px;
+    background: url(https://cloud.tonroll.com/assets/walletPaymentMethodsLogo/usdLogo.svg) center center / contain no-repeat;
+    flex-shrink: 0;
+}
+.css-uusoxa {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(49, 61, 94, 0.3);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.css-kr151x {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.css-138ot80 {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+}
+.css-uusoxa {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(49, 61, 94, 0.3);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.css-y3pmzh {
+    width: 16px;
+    height: 16px;
+    background: url(https://cloud.tonroll.com/assets/walletPaymentMethodsLogo/usdLogo.svg) center center / contain no-repeat;
+    flex-shrink: 0;
+}
+.css-138ot80 {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+}
+.css-kr151x {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+}
+.css-1m7ritw {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--chakra-line-clamp);
+    --chakra-line-clamp: 1;
+}.css-1m7ritw1 {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--chakra-line-clamp);
+    --chakra-line-clamp: 1;
+}
+.css-138ot80 {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+}
+.css-kr151x {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.section-block {
+    color: white;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #25272e;
+    border-radius: 24px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    align-self: flex-start;
+}
+.section-step {
+    background: #45AEF5;
+    border-radius: 16px;
+
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 32px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.sections {
+    width: 90%;
+    margin: 0 auto;
+}
+.section-title {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 28px;
+    margin-bottom: 10px;
+}
+.section-caption {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #8994A3;
+    margin-bottom: 20px;
+}
+.section-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 16px 0px 14px;
+    background: #45AEF5;
+    border-radius: 12px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 22px;
+    text-decoration: none;
+    height: 48px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 150ms ease-in-out;
+    text-decoration: none;
+}
+
+.section-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 16px 0px 14px;
+    background: #45AEF5;
+    border-radius: 12px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 22px;
+    text-decoration: none;
+    height: 48px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 150ms ease-in-out;
+    text-decoration: none;
+}

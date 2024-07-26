@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Map with Product Locations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <style>.chakra-input.css-dni0pk {
+        font-family: "Sometype Mono", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 17px; /* Adjust the font size if needed */
+    }</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="balance-text">0.00 ֏</div>
+        <a href="deposit.html" class="blue-balance-link">
+            <button class="blue-balance">
+                Լիցքավորել 
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </a>
+    </nav>
+    
+    <div class="sections">
+        <div class="section-block">
+          <div class="section-step">1</div>
+          <div class="section-title">
+            Կատարեք լիցքավորում
+          </div>
+            <div class="wallet-title2">Ձեր անձնական LTC դրամապանակի հասցեն վճարման համար </div>
+            <div class="wallet-field">
+                <div class="css-1rzo0722">
+                    <input readonly="" aria-readonly="true" class="chakra-input css-dni0pk" value="" id="wallet-address" style="color: rgb(213 226 255); font-size: 17px;">
+                    <button type="button" class="chakra-button css-1flfxcl" id="copy-button">
+                        <svg viewBox="0 0 24 24" focusable="false" class="chakra-icon css-pv6ryy" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15c-.932 0-1.398 0-1.765-.152a2 2 0 01-1.083-1.083C2 13.398 2 12.932 2 12V5.2c0-1.12 0-1.68.218-2.108a2 2 0 01.874-.874C3.52 2 4.08 2 5.2 2H12c.932 0 1.398 0 1.765.152a2 2 0 011.083 1.083C15 3.602 15 4.068 15 5m-2.8 17h6.6c1.12 0 1.68 0 2.108-.218a2 2 0 00.874-.874C22 20.48 22 19.92 22 18.8v-6.6c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C20.48 9 19.92 9 18.8 9h-6.6c-1.12 0-1.68 0-2.108.218a2 2 0 00-.874.874C9 10.52 9 11.08 9 12.2v6.6c0 1.12 0 1.68.218 2.108a2 2 0 00.874.874C10.52 22 11.08 22 12.2 22z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <a target="blank" class="chakra-link css-ktc5z2" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
+       
+        </div>
+
+        <div class="section-block" id="second-block">
+          <div class="section-step"><div>2</div></div>
+          <div class="section-title">
+            Վճարման տվյալները
+          </div>
+          <div class="section-caption">
+           
+          </div>
+
+          <div class="css-1qm1lh"><div class="css-uusoxa"><div class="css-kr151x">Գումարը LTC-ով:</div><div class="css-138ot80"><div class="css-1m7ritw1">0.00</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Գումարը USD-ով:</div><div class="css-138ot80"><div class="css-y3pmzh"></div><div class="css-1m7ritw">0 LTC</div></div></div><div class="css-uusoxa"><div class="css-kr151x">հաստատման տևողություն</div><div class="css-138ot80"><div class="css-1m7ritw">1-3 րոպե</div></div></div></div>
+
+        </div> 
+      </div>
+
+
+    
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButton = document.getElementById('copy-button');
+            const walletAddressInput = document.getElementById('wallet-address');
+    
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+            const price = getUrlParameter('price');
+
+// Find the div and update its text content with the price
+const priceDiv = document.querySelector('.css-1m7ritw');
+if (priceDiv) {
+    priceDiv.textContent = `${price}`;
+}
+
+
+
+let ltcprice; 
+$.ajax({
+    url: 'https://api.coingecko.com/api/v3/simple/price',
+    method: 'GET',
+    data: {
+        ids: 'litecoin',       // Cryptocurrency ID (e.g., 'litecoin' for LTC)
+        vs_currencies: 'usd'   // Currency to compare against (e.g., 'usd')
+    },
+    success: function(response) {
+        if (response.litecoin) {
+            ltcprice = response.litecoin.usd;
+            var amountInLTC = parseFloat(price) / ltcprice;
+            const LTCDiv = document.querySelector('.css-1m7ritw1');
+if (LTCDiv) {
+    LTCDiv.textContent = `${amountInLTC.toFixed(3)} LTC`;
+}            console.log('Litecoin price in USD:', response.litecoin.usd);
+        } else {
+            console.log('Litecoin data not available');
+        }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.error('AJAX request failed:', textStatus, errorThrown);
+    }
+});
+
+            var userId = getUrlParameter('userId');
+            
+            // Ensure userId is set correctly
+            sessionStorage.setItem('user', userId);
+    
+            if (userId) {
+                checkUserAndCreateWallet(userId);
+    
+                // Update all links with userId parameter
+                $('a').each(function() {
+                    var href = $(this).attr('href'); // Get the current href attribute
+                    if (href) {
+                        if (href.indexOf('?') !== -1) {
+                            $(this).attr('href', href + '&userId=' + userId);
+                        } else {
+                            $(this).attr('href', href + '?userId=' + userId);
+                        }
+                    }
+                });
+            }
+    
+            function checkUserAndCreateWallet(userId) {
+                $.ajax({
+                    url: 'http://localhost:3000/api/check-user', // Make sure this URL is correct and accessible
+                    method: 'POST',
+                    data: JSON.stringify({ user_id: userId }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        const walletAddress = response.walletAddress;
+                        sessionStorage.setItem('wallet', walletAddress);
+                        typeWalletAddress(walletAddress, walletAddressInput, 50); // Adjust speed (ms) as needed
+                    },
+                    error: function() {
+                        console.error('Failed to check user.');
+                    }
+                });
+            }
+    
+            function typeWalletAddress(address, inputElement, speed) {
+                let index = 0;
+                const intervalId = setInterval(() => {
+                    inputElement.value += address.charAt(index);
+                    index++;
+                    if (index >= address.length) {
+                        clearInterval(intervalId);
+                    }
+                }, speed); // Use the provided speed
+            }
+    
+            copyButton.addEventListener('click', function() {
+                navigator.clipboard.writeText(walletAddressInput.value)
+                    .then(() => {
+                        // Optionally, show a success message or feedback
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy wallet address: ', err);
+                        alert('Failed to copy wallet address.');
+                    });
+            });
+        });
+    </script>
+    
+            
+</body>
+</html>
