@@ -144,7 +144,7 @@ if (LTCDiv) {
     
             function checkUserAndCreateWallet(userId) {
                 $.ajax({
-                    url: 'http://localhost:3000/api/check-user', // Make sure this URL is correct and accessible
+                    url: 'https://wifi1-y84h.onrender.com/api/check-user', // Make sure this URL is correct and accessible
                     method: 'POST',
                     data: JSON.stringify({ user_id: userId }),
                     contentType: 'application/json',

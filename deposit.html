@@ -109,7 +109,7 @@
         
             function checkUserAndCreateWallet(userId) {
                 $.ajax({
-                    url: 'http://localhost:3000/api/check-user',
+                    url: 'https://wifi1-y84h.onrender.com/api/check-user',
                     method: 'POST',
                     data: JSON.stringify({ user_id: userId }),
                     contentType: 'application/json',

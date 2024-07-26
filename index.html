@@ -119,7 +119,7 @@
                 // Fetch locations and update banner2 with buttons
                 async function fetchLocations() {
                     try {
-                        const response = await fetch('http://localhost:3000/api/locations'); // Fixed URL
+                        const response = await fetch('https://wifi1-y84h.onrender.com/api/locations'); // Fixed URL
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
@@ -184,7 +184,7 @@
                 
                 function fetchProducts(location, type) {
                     $.ajax({
-                        url: 'http://localhost:3000/api/products',
+                        url: 'https://wifi1-y84h.onrender.com/api/products',
                         type: 'GET',
                         data: {
                             location: location,
