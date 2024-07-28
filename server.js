@@ -19,7 +19,7 @@ const sharp = require('sharp');
 // PostgreSQL connection
 
 const client = new Pool({
-    connectionString: 'postgresql://nubmaster:RQM0rRXyAWxV5aVhPdj5YNDj6kzKLDN0@dpg-cqgf4k2ju9rs73cd4hjg-a.oregon-postgres.render.com/lavkanal',
+    connectionString: 'postgresql://wifi_db_user:yGEtjMFrhK3m0oG8Tc8hglOqn9CaIhLT@dpg-cqj2e9mehbks73c4mh60-a.oregon-postgres.render.com/wifi_db',
     ssl: { rejectUnauthorized: false }
 });
 client.connect();
