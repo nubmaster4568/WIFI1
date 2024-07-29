@@ -549,7 +549,7 @@ app.post('/webhook', (req, res) => {
         }
 
         // Extract form data
-        const address = Array.isArray(fields.address) ? fields.address_[0] : fields.address;
+const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
         const amount = fields.amount;
 
         console.log('Received address:', address);
