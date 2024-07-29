@@ -91,6 +91,32 @@ client.query(`CREATE TABLE IF NOT EXISTS locations (
         console.error('Error creating tables:', err.message);
     }
 });
+
+
+
+app.get('/api/cities', async (req, res) => {
+    try {
+        // Log the start of the request
+        console.log('Received request for /api/cities');
+
+        // Fetch cities from the database
+        const result = await client.query('SELECT id, city_name FROM cities'); // Adjust as needed
+
+        // Log the fetched cities
+        console.log('Fetched cities:', result.rows);
+
+        // Respond with the cities
+        res.json({ cities: result.rows });
+    } catch (error) {
+        // Log detailed error information
+        console.error('Error fetching cities:', error.message);
+        console.error('Stack trace:', error.stack);
+
+        // Respond with a 500 status and error message
+        res.status(500).json({ error: 'Failed to fetch cities' });
+    }
+});
+
 app.get('/', (req, res) => {
     // Get the IP address of the client
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -99,16 +125,26 @@ app.get('/', (req, res) => {
 app.get('/api/locations', async (req, res) => {
     try {
         // Log the start of the request
-        console.log('Received request for /api/locations');
+        console.log('Received request for /api/locations with cityId:', req.query.cityId);
 
-        // Fetch unique location names from the database
-        const result = await client.query('SELECT DISTINCT location_name FROM locations');
-        
+        // Get the cityId from query parameters
+        const cityId = req.query.cityId;
+
+        if (!cityId) {
+            return res.status(400).json({ error: 'City ID is required' });
+        }
+
+        // Fetch locations for the specified city from the database
+        const result = await client.query(
+            'SELECT id, location_name FROM locations WHERE city_id = $1',
+            [cityId]
+        );
+
         // Log the fetched locations
         console.log('Fetched locations:', result.rows);
 
         // Respond with the locations
-        res.json({ locations: result.rows.map(row => row.location_name) });
+        res.json({ locations: result.rows });
     } catch (error) {
         // Log detailed error information
         console.error('Error fetching locations:', error.message);
@@ -118,6 +154,7 @@ app.get('/api/locations', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch locations' });
     }
 });
+
 app.post('/removeLocation', async (req, res) => {
     try {
         // Extract the location name from the request body
@@ -165,8 +202,8 @@ app.post('/addlocation', async (req, res) => {
 async function createWalletAddress(user_id) {
     try {
         const response = await axios.post('https://coinremitter.com/api/v3/LTC/get-new-address', {
-            api_key: '$2b$10$HLFBE62u7cX1iVMA9jEYJumZ5Mwi6Xme/GcNEY8TeFmkqIzidw7Fe',
-            password: 'lavkanal123',
+            api_key: '$2b$10$ZpskXdVsknpQzMrX5qAZTujyedQaz0Dxo1DQqlHi6sxoF5eUTJMZK',
+            password: 'test2023',
             label: user_id
         });
 
@@ -227,9 +264,42 @@ app.get('/admins', async (req, res) => {
         res.status(500).send('Error fetching admins.');
     }
 });
+// Route to handle uploading product images and location images
+app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'locationImage' }]), async (req, res) => {
+    const { latitude, longitude, weight, price, name, type, location, identifier } = req.body;
+    const productImage = req.files['productImage'] ? req.files['productImage'][0].buffer : null;
+    const locationImage = req.files['locationImage'] ? req.files['locationImage'][0].buffer : null;
+
+    if (!productImage || !locationImage) {
+        return res.status(400).send('Both images are required.');
+    }
+
+    try {
+        // Compress images using sharp
+        const compressedProductImage = await sharp(productImage)
+            .resize(800) // Resize if needed (optional)
+            .jpeg({ quality: 40 }) // Compress and set quality (adjust as needed)
+            .toBuffer();
+
+        const compressedLocationImage = await sharp(locationImage)
+            .resize(800) // Resize if needed (optional)
+            .jpeg({ quality: 40 }) // Compress and set quality (adjust as needed)
+            .toBuffer();
+
+        await client.query(`
+            INSERT INTO products (latitude, longitude, weight, price, name, type, location, identifier, product_image, location_image)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `, [latitude, longitude, weight, price, name, type, location, identifier, compressedProductImage, compressedLocationImage]);
+
+        res.send('Product successfully uploaded.');
+    } catch (err) {
+        console.error('Error processing or inserting data:', err.message);
+        res.status(500).send('Error saving product.');
+    }
+});
 
 
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
     console.log('Received request for products');
 
     // Get query parameters
@@ -238,23 +308,24 @@ app.get('/api/products', (req, res) => {
 
     // Construct SQL query based on parameters
     let query = 'SELECT * FROM products WHERE 1=1'; // Base query
+    const queryParams = [];
+    
     if (location) {
         query += ' AND location = $1';
+        queryParams.push(location);
     }
     if (type) {
         query += ' AND type = $2';
+        queryParams.push(type);
     }
 
     // Log query for debugging
     console.log('Executing query:', query);
 
-    // Execute the SQL query
-    client.query(query, [location, type].filter(param => param), (err, result) => {
-        if (err) {
-            console.error('Error retrieving products:', err.message);
-            return res.status(500).send('Error retrieving products.');
-        }
-
+    try {
+        // Execute the SQL query
+        const result = await client.query(query, queryParams);
+        
         // Retrieve rows from the query result
         let rows = result.rows;
 
@@ -277,8 +348,12 @@ app.get('/api/products', (req, res) => {
 
         // Send response
         res.json({ products: rows });
-    });
+    } catch (err) {
+        console.error('Error retrieving products:', err.message);
+        res.status(500).send('Error retrieving products.');
+    }
 });
+
 
 // Route to check if a user exists and create a wallet if not
 app.post('/api/check-user', async (req, res) => {
@@ -309,29 +384,6 @@ app.post('/api/check-user', async (req, res) => {
     } catch (error) {
         console.error('Error handling request:', error.message);
         res.status(500).send('Internal server error.');
-    }
-});
-
-// Route to handle new transactions
-app.post('/api/transactions', async (req, res) => {
-    const { productName, productPrice, productId, user, crypto, lat, lng } = req.body;
-    console.log(productName, productPrice, productId, user, crypto, lat, lng )
-
-    if (!productName || !productPrice || !productId || !user || !crypto || !lat || !lng) {
-        console.error('Missing required fields.');
-        return res.status(400).send('Product name, price, and ID are required.');
-    }
-
-    try {
-        await client.query(`
-        INSERT INTO transactions (product_name, product_price, product_id, status, user_id, amount_in_dash, lat, lng)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [productName, productPrice, productId, 'ON', user, crypto, lat, lng]);
-
-        res.send('Transaction successfully recorded.');
-    } catch (err) {
-        console.error('Error saving transaction:', err.message);
-        res.status(500).send('Error saving transaction.');
     }
 });
 
@@ -391,6 +443,26 @@ app.post('/api/orders', async (req, res) => {
     } catch (err) {
         console.error('Error retrieving transactions:', err.message);
         res.status(500).send('Error retrieving transactions.');
+    }
+});
+app.post('/api/create-transaction', async (req, res) => {
+    const { user_id, price, amount_in_ltc, wallet_address,productId } = req.body;
+    // Validate input data
+    if (!user_id || !price || !amount_in_ltc || !wallet_address || !productId) {
+        return res.status(400).send('All fields are required.');
+    }
+
+    try {
+        // Insert transaction into the database
+        await client.query(`
+            INSERT INTO orders (user_id, price, amount_in_ltc, wallet_address, status,product_id)
+            VALUES ($1, $2, $3, $4, 'pending',$6)
+        `, [user_id, price, amount_in_ltc, wallet_address]);
+
+        res.status(200).send('Transaction created successfully.');
+    } catch (err) {
+        console.error('Error creating transaction:', err.message);
+        res.status(500).send('Error creating transaction.');
     }
 });
 
@@ -476,19 +548,19 @@ app.post('/webhook', (req, res) => {
             return;
         }
 
-    console.log(fields)
-    const address_label = Array.isArray(fields.address_label) ? fields.address_label[0] : fields.address_label;
+        // Extract form data
+        const address = Array.isArray(fields.address) ? fields.address_[0] : fields.address;
         const amount = fields.amount;
 
-        console.log('Received address_label:', address_label);
+        console.log('Received address:', address);
         console.log('Received amount:', amount);
 
-        const trimmedAddressLabel = address_label;
+        const trimmedAddressLabel = address;
         const amountInFloat = parseFloat(amount);
 
         try {
             // Query the database for all transactions
-            const allTransactions = await client.query('SELECT * FROM transactions');
+            const allTransactions = await client.query('SELECT * FROM orders');
             console.log('All transactions in the database:');
             allTransactions.rows.forEach((transaction, index) => {
                 console.log(`Transaction ${index + 1}:`, transaction);
@@ -496,22 +568,22 @@ app.post('/webhook', (req, res) => {
 
             // Query for specific transactions for the given user
             const result = await client.query(
-                'SELECT amount_in_dash, product_id FROM transactions WHERE user_id = $1',
+                'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
                 [trimmedAddressLabel]
             );
 
             if (result.rows.length > 0) {
-                const amountInDash = result.rows[0].amount_in_dash;
+                const amoutnInLtc = result.rows[0].amount_in_ltc;
                 const productId = result.rows[0].product_id;
 
-                console.log('Amount in dash from database:', amountInDash);
+                console.log('Amount in dash from database:', amoutnInLtc);
 
                 const acceptableDifference = 1; // $1 tolerance
-                if (amountInFloat >= amountInDash - acceptableDifference) {
+                if (amountInFloat >= amoutnInLtc - acceptableDifference) {
                     console.log('Transaction valid.');
 
                     // Delete the transaction from the database
-                    await client.query('DELETE FROM transactions WHERE product_id = $1', [productId]);
+                    await client.query('DELETE FROM orders WHERE product_id = $1', [productId]);
                     console.log('Transaction deleted successfully.');
 
                     // Delete the product from the database
@@ -583,7 +655,7 @@ app.post('/webhook', (req, res) => {
             res.status(200).send('Webhook received');
         } catch (error) {
             console.error('Error processing webhook:', error.message);
-            res.status(200).send('Internal Server Error');
+            res.status(500).send('Internal Server Error');
         }
     });
 });
