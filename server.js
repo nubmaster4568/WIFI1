@@ -476,8 +476,8 @@ app.post('/webhook', (req, res) => {
             return;
         }
 
-        // Extract form data
-        const address_label = Array.isArray(fields.address_label) ? fields.address_label[0] : fields.address_label;
+    console.log(fields)
+    const address_label = Array.isArray(fields.address_label) ? fields.address_label[0] : fields.address_label;
         const amount = fields.amount;
 
         console.log('Received address_label:', address_label);
