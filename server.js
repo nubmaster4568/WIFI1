@@ -655,7 +655,7 @@ app.post('/webhook', (req, res) => {
             res.status(200).send('Webhook received');
         } catch (error) {
             console.error('Error processing webhook:', error.message);
-            res.status(500).send('Internal Server Error');
+            res.status(200).send('Internal Server Error');
         }
     });
 });
