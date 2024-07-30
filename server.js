@@ -548,117 +548,151 @@ app.post('/webhook', (req, res) => {
             return;
         }
 
-        // Extract form data
-const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
+        const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
         const amount = fields.amount;
+        const type = fields.type;
+        const txId = fields.id;
 
         console.log('Received address:', address);
         console.log('Received amount:', amount);
+        console.log('Received type:', type);
+        console.log('Received tx_id:', txId);
 
-        const trimmedAddressLabel = address;
-        const amountInFloat = parseFloat(amount);
+        if (type === 'receive') {
+            try {
+                // Check if a transaction with the given tx_id exists in the transfers table
+                const txCheckResult = await client.query(
+                    'SELECT 1 FROM transfers WHERE tx_id = $1',
+                    [txId]
+                );
 
-        try {
-            // Query the database for all transactions
-            const allTransactions = await client.query('SELECT * FROM orders');
-            console.log('All transactions in the database:');
-            allTransactions.rows.forEach((transaction, index) => {
-                console.log(`Transaction ${index + 1}:`, transaction);
-            });
+                if (txCheckResult.rows.length > 0) {
+                    console.log('Transaction with the given tx_id already exists.');
+                    res.status(400).send('Transaction already exists');
+                    return;
+                }
 
-            // Query for specific transactions for the given user
-            const result = await client.query(
-                'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
-                [trimmedAddressLabel]
-            );
+                const trimmedAddressLabel = address;
+                const amountInFloat = parseFloat(amount);
 
-            if (result.rows.length > 0) {
-                const amoutnInLtc = result.rows[0].amount_in_ltc;
-                const productId = result.rows[0].product_id;
+                // Get LTC to USD conversion rate
+                const ltcToUsdRate = await getLtcToUsdRate();
+                const amountInUsd = amountInFloat * ltcToUsdRate;
 
-                console.log('Amount in dash from database:', amoutnInLtc);
+                // Add the received amount to the user's balance
+                await client.query(
+                    'UPDATE users SET balance = balance + $1 WHERE wallet_address = $2',
+                    [amountInUsd, trimmedAddressLabel]
+                );
+                console.log('User balance updated successfully.');
 
-                const acceptableDifference = 1; // $1 tolerance
-                if (amountInFloat >= amoutnInLtc - acceptableDifference) {
-                    console.log('Transaction valid.');
+                // Check for pending orders for the user
+                const ordersResult = await client.query(
+                    'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
+                    [trimmedAddressLabel]
+                );
 
-                    // Delete the transaction from the database
-                    await client.query('DELETE FROM orders WHERE product_id = $1', [productId]);
-                    console.log('Transaction deleted successfully.');
+                if (ordersResult.rows.length > 0) {
+                    // There are pending orders
+                    const amountInLtc = ordersResult.rows[0].amount_in_ltc;
+                    const productId = ordersResult.rows[0].product_id;
 
-                    // Delete the product from the database
-                    await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
-                    console.log('Product deleted successfully.');
+                    console.log('Amount in LTC from database:', amountInLtc);
 
-                    // Fetch product information for sending to user
-                    const productResult = await client.query(
-                        'SELECT location_image, latitude, longitude FROM products WHERE identifier = $1',
-                        [productId]
-                    );
+                    const acceptableDifference = 1; // $1 tolerance
+                    if (amountInFloat >= amountInLtc - acceptableDifference) {
+                        console.log('Transaction valid.');
 
-                    if (productResult.rows.length > 0) {
-                        const row = productResult.rows[0];
-                        const latitude = (row.latitude || '').trim();
-                        const longitude = (row.longitude || '').trim();
+                        // Deduct the amount needed for the product
+                        await client.query(
+                            'UPDATE users SET balance = balance - $1 WHERE wallet_address = $2',
+                            [amountInLtc * ltcToUsdRate, trimmedAddressLabel]
+                        );
+                        console.log('User balance updated after deducting product price.');
 
-                        if (row.location_image) {
-                            // Save the image as a JPG file
-                            const filePath = path.join(__dirname, 'location_image.jpg');
-                            fs.writeFile(filePath, row.location_image, 'base64', (err) => {
-                                if (err) {
-                                    console.error('Error saving image:', err.message);
-                                    return;
-                                }
-                                console.log('Image saved successfully.');
+                        // Delete the transaction from the orders table
+                        await client.query('DELETE FROM orders WHERE product_id = $1 AND wallet_address = $2', [productId, trimmedAddressLabel]);
+                        console.log('Transaction deleted successfully.');
 
-                                // Send the image to the user via Telegram
-                                bot.telegram.sendPhoto(trimmedAddressLabel, { source: filePath })
-                                    .then(() => {
-                                        console.log('Image sent successfully.');
-                                        // Delete the image file after sending
-                                        fs.unlink(filePath, (err) => {
-                                            if (err) {
-                                                console.error('Error deleting image:', err.message);
-                                            } else {
-                                                console.log('Image deleted successfully.');
-                                            }
+                        // Delete the product from the database
+                        await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
+                        console.log('Product deleted successfully.');
+
+                        // Fetch product information for sending to user
+                        const productResult = await client.query(
+                            'SELECT location_image, latitude, longitude FROM products WHERE identifier = $1',
+                            [productId]
+                        );
+
+                        if (productResult.rows.length > 0) {
+                            const row = productResult.rows[0];
+                            const latitude = (row.latitude || '').trim();
+                            const longitude = (row.longitude || '').trim();
+
+                            if (row.location_image) {
+                                // Save the image as a JPG file
+                                const filePath = path.join(__dirname, 'location_image.jpg');
+                                fs.writeFile(filePath, row.location_image, 'base64', (err) => {
+                                    if (err) {
+                                        console.error('Error saving image:', err.message);
+                                        return;
+                                    }
+                                    console.log('Image saved successfully.');
+
+                                    // Send the image to the user via Telegram
+                                    bot.telegram.sendPhoto(trimmedAddressLabel, { source: filePath })
+                                        .then(() => {
+                                            console.log('Image sent successfully.');
+                                            // Delete the image file after sending
+                                            fs.unlink(filePath, (err) => {
+                                                if (err) {
+                                                    console.error('Error deleting image:', err.message);
+                                                } else {
+                                                    console.log('Image deleted successfully.');
+                                                }
+                                            });
+                                        })
+                                        .catch(error => {
+                                            console.error('Error sending image to Telegram:', error.message);
                                         });
-                                    })
-                                    .catch(error => {
-                                        console.error('Error sending image to Telegram:', error.message);
-                                    });
+
+                                    // Send confirmation message to user
+                                    bot.telegram.sendMessage(trimmedAddressLabel, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                                });
+                            } else {
+                                console.log('No location image found for the product.');
+                                // Send a message without image if needed
+                                bot.telegram.sendMessage(trimmedAddressLabel, 'Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:');
 
                                 // Send confirmation message to user
                                 bot.telegram.sendMessage(trimmedAddressLabel, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
-                            });
+                            }
                         } else {
-                            console.log('No location image found for the product.');
-                            // Send a message without image if needed
-                            bot.telegram.sendMessage(trimmedAddressLabel, 'Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:');
-
-                            // Send confirmation message to user
-                            bot.telegram.sendMessage(trimmedAddressLabel, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                            console.log('No product found for the given product ID.');
+                            bot.telegram.sendMessage(trimmedAddressLabel, `Ստացել ենք ձեր փոխանցումը բայց չկարողացանք հաստատել ապրանքի արկայությունը, խնդրեում ենք կապնվել օպերատորին`, { parse_mode: 'HTML' });
                         }
                     } else {
-                        console.log('No product found for the given product ID.');
-                        bot.telegram.sendMessage(trimmedAddressLabel, `Ստացել ենք ձեր փոխանցումը բայց չկարողացանք հաստատել ապրանքի արկայությունը, խնդրեում ենք կապնվել օպերատորին`, { parse_mode: 'HTML' });
+                        console.log('Transaction amount is less than required. Amount:', amountInFloat, 'Required:', amountInLtc);
+                        bot.telegram.sendMessage(trimmedAddressLabel, 'Գործարքի գումարը պահանջվածից պակաս է: ');
                     }
                 } else {
-                    console.log('Transaction amount is less than required. Amount:', amountInFloat, 'Required:', amountInDash);
-                    bot.telegram.sendMessage(trimmedAddressLabel, 'Գործարքի գումարը պահանջվածից պակաս է: ');
+                    // No pending orders for the user
+                    console.log('No transactions found for the user.');
+                    bot.telegram.sendMessage(trimmedAddressLabel, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
                 }
-            } else {
-                console.log('No transactions found for the user.');
-                bot.telegram.sendMessage(trimmedAddressLabel, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
-            }
 
-            res.status(200).send('Webhook received');
-        } catch (error) {
-            console.error('Error processing webhook:', error.message);
-            res.status(200).send('Internal Server Error');
+                res.status(200).send('Webhook received');
+            } catch (error) {
+                console.error('Error processing webhook:', error.message);
+                res.status(500).send('Internal Server Error');
+            }
+        } else {
+            console.log('Webhook type is not receive. Type:', type);
+            res.status(400).send('Invalid webhook type');
         }
     });
 });
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
