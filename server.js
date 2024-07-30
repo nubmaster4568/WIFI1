@@ -13,7 +13,10 @@ const fs = require('fs');
 const path = require('path');
 const { Telegraf } = require('telegraf');
 const sharp = require('sharp');
+const { Telegraf } = require('telegraf');
 
+// Replace 'YOUR_BOT_TOKEN_HERE' with your actual bot token from BotFather
+const bot = new Telegraf('7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk');
 
 // Create a new instance of the TelegramBot class
 // PostgreSQL connection
