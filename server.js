@@ -809,8 +809,7 @@ app.post('/webhook', (req, res) => {
                         console.log('Transaction deleted successfully.');
 
                         // Delete the product from the database
-                        await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
-                        console.log('Product deleted successfully.');
+
 
                         // Fetch product information for sending to user
                         const productResult = await client.query(
@@ -853,6 +852,9 @@ app.post('/webhook', (req, res) => {
                                     // Send confirmation message to user
                                     bot.telegram.sendMessage(userId, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
                                 });
+
+                        await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
+                        console.log('Product deleted successfully.');
                             } else {
                                 console.log('No location image found for the product.');
                                 // Send a message without image if needed
