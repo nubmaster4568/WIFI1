@@ -19,7 +19,7 @@ const sharp = require('sharp');
 // PostgreSQL connection
 
 const client = new Pool({
-    connectionString: 'postgresql://nubmaster:RQM0rRXyAWxV5aVhPdj5YNDj6kzKLDN0@dpg-cqgf4k2ju9rs73cd4hjg-a.oregon-postgres.render.com/lavkanal',
+    connectionString: 'postgresql://wifi_db_user:yGEtjMFrhK3m0oG8Tc8hglOqn9CaIhLT@dpg-cqj2e9mehbks73c4mh60-a.oregon-postgres.render.com/wifi_db',
     ssl: { rejectUnauthorized: false }
 });
 client.connect();
@@ -32,16 +32,12 @@ app.use(express.static('./'));
 
 // Ensure the tables exist
 client.query(`
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE IF NOT EXISTS transfers (
     id SERIAL PRIMARY KEY,
-    product_name TEXT,
-    product_price REAL,
-    product_id TEXT,
-    status TEXT,
+    tx_id TEXT,
+    amount REAL,
     user_id TEXT,  -- Changed from 'user'
-    amount_in_dash REAL,
-    lat REAL,
-    lng REAL
+    wallet_address TEXT
 );
 
 `, (err) => {
@@ -91,6 +87,32 @@ client.query(`CREATE TABLE IF NOT EXISTS locations (
         console.error('Error creating tables:', err.message);
     }
 });
+
+
+
+app.get('/api/cities', async (req, res) => {
+    try {
+        // Log the start of the request
+        console.log('Received request for /api/cities');
+
+        // Fetch cities from the database
+        const result = await client.query('SELECT id, city_name FROM cities'); // Adjust as needed
+
+        // Log the fetched cities
+        console.log('Fetched cities:', result.rows);
+
+        // Respond with the cities
+        res.json({ cities: result.rows });
+    } catch (error) {
+        // Log detailed error information
+        console.error('Error fetching cities:', error.message);
+        console.error('Stack trace:', error.stack);
+
+        // Respond with a 500 status and error message
+        res.status(500).json({ error: 'Failed to fetch cities' });
+    }
+});
+
 app.get('/', (req, res) => {
     // Get the IP address of the client
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -99,16 +121,26 @@ app.get('/', (req, res) => {
 app.get('/api/locations', async (req, res) => {
     try {
         // Log the start of the request
-        console.log('Received request for /api/locations');
+        console.log('Received request for /api/locations with cityId:', req.query.cityId);
 
-        // Fetch unique location names from the database
-        const result = await client.query('SELECT DISTINCT location_name FROM locations');
-        
+        // Get the cityId from query parameters
+        const cityId = req.query.cityId;
+
+        if (!cityId) {
+            return res.status(400).json({ error: 'City ID is required' });
+        }
+
+        // Fetch locations for the specified city from the database
+        const result = await client.query(
+            'SELECT id, location_name FROM locations WHERE city_id = $1',
+            [cityId]
+        );
+
         // Log the fetched locations
         console.log('Fetched locations:', result.rows);
 
         // Respond with the locations
-        res.json({ locations: result.rows.map(row => row.location_name) });
+        res.json({ locations: result.rows });
     } catch (error) {
         // Log detailed error information
         console.error('Error fetching locations:', error.message);
@@ -118,6 +150,7 @@ app.get('/api/locations', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch locations' });
     }
 });
+
 app.post('/removeLocation', async (req, res) => {
     try {
         // Extract the location name from the request body
@@ -165,8 +198,8 @@ app.post('/addlocation', async (req, res) => {
 async function createWalletAddress(user_id) {
     try {
         const response = await axios.post('https://coinremitter.com/api/v3/LTC/get-new-address', {
-            api_key: '$2b$10$HLFBE62u7cX1iVMA9jEYJumZ5Mwi6Xme/GcNEY8TeFmkqIzidw7Fe',
-            password: 'lavkanal123',
+            api_key: '$2b$10$ZpskXdVsknpQzMrX5qAZTujyedQaz0Dxo1DQqlHi6sxoF5eUTJMZK',
+            password: 'test2023',
             label: user_id
         });
 
@@ -227,9 +260,42 @@ app.get('/admins', async (req, res) => {
         res.status(500).send('Error fetching admins.');
     }
 });
+// Route to handle uploading product images and location images
+app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'locationImage' }]), async (req, res) => {
+    const { latitude, longitude, weight, price, name, type, location, identifier } = req.body;
+    const productImage = req.files['productImage'] ? req.files['productImage'][0].buffer : null;
+    const locationImage = req.files['locationImage'] ? req.files['locationImage'][0].buffer : null;
+
+    if (!productImage || !locationImage) {
+        return res.status(400).send('Both images are required.');
+    }
+
+    try {
+        // Compress images using sharp
+        const compressedProductImage = await sharp(productImage)
+            .resize(800) // Resize if needed (optional)
+            .jpeg({ quality: 40 }) // Compress and set quality (adjust as needed)
+            .toBuffer();
+
+        const compressedLocationImage = await sharp(locationImage)
+            .resize(800) // Resize if needed (optional)
+            .jpeg({ quality: 40 }) // Compress and set quality (adjust as needed)
+            .toBuffer();
+
+        await client.query(`
+            INSERT INTO products (latitude, longitude, weight, price, name, type, location, identifier, product_image, location_image)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `, [latitude, longitude, weight, price, name, type, location, identifier, compressedProductImage, compressedLocationImage]);
+
+        res.send('Product successfully uploaded.');
+    } catch (err) {
+        console.error('Error processing or inserting data:', err.message);
+        res.status(500).send('Error saving product.');
+    }
+});
 
 
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
     console.log('Received request for products');
 
     // Get query parameters
@@ -238,23 +304,24 @@ app.get('/api/products', (req, res) => {
 
     // Construct SQL query based on parameters
     let query = 'SELECT * FROM products WHERE 1=1'; // Base query
+    const queryParams = [];
+    
     if (location) {
         query += ' AND location = $1';
+        queryParams.push(location);
     }
     if (type) {
         query += ' AND type = $2';
+        queryParams.push(type);
     }
 
     // Log query for debugging
     console.log('Executing query:', query);
 
-    // Execute the SQL query
-    client.query(query, [location, type].filter(param => param), (err, result) => {
-        if (err) {
-            console.error('Error retrieving products:', err.message);
-            return res.status(500).send('Error retrieving products.');
-        }
-
+    try {
+        // Execute the SQL query
+        const result = await client.query(query, queryParams);
+        
         // Retrieve rows from the query result
         let rows = result.rows;
 
@@ -277,8 +344,12 @@ app.get('/api/products', (req, res) => {
 
         // Send response
         res.json({ products: rows });
-    });
+    } catch (err) {
+        console.error('Error retrieving products:', err.message);
+        res.status(500).send('Error retrieving products.');
+    }
 });
+
 
 // Route to check if a user exists and create a wallet if not
 app.post('/api/check-user', async (req, res) => {
@@ -309,29 +380,6 @@ app.post('/api/check-user', async (req, res) => {
     } catch (error) {
         console.error('Error handling request:', error.message);
         res.status(500).send('Internal server error.');
-    }
-});
-
-// Route to handle new transactions
-app.post('/api/transactions', async (req, res) => {
-    const { productName, productPrice, productId, user, crypto, lat, lng } = req.body;
-    console.log(productName, productPrice, productId, user, crypto, lat, lng )
-
-    if (!productName || !productPrice || !productId || !user || !crypto || !lat || !lng) {
-        console.error('Missing required fields.');
-        return res.status(400).send('Product name, price, and ID are required.');
-    }
-
-    try {
-        await client.query(`
-        INSERT INTO transactions (product_name, product_price, product_id, status, user_id, amount_in_dash, lat, lng)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [productName, productPrice, productId, 'ON', user, crypto, lat, lng]);
-
-        res.send('Transaction successfully recorded.');
-    } catch (err) {
-        console.error('Error saving transaction:', err.message);
-        res.status(500).send('Error saving transaction.');
     }
 });
 
@@ -395,17 +443,119 @@ app.post('/api/orders', async (req, res) => {
 });
 
 
+app.get('/api/checkActiveTransactions', async (req, res) => {
+    try {
+        const userId = req.query.userId; // Get userId from query parameters
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        // Query to select active transactions
+        const query = 'SELECT * FROM orders WHERE user_id = $1';
+        const values = [userId]; // Adjust based on your status column
+
+        // Execute the query
+        const result = await client.query(query, values);
+
+        // Check if there are active transactions
+        if (result.rows.length > 0) {
+            // If there are active transactions, return the details of the first one
+            const transaction = result.rows[0];
+            res.json({
+                hasActiveTransaction: true,
+                transaction: {
+                    id: transaction.id,
+                    user_id: transaction.user_id,
+                    price: transaction.price,
+                    amount_in_ltc: transaction.amount_in_ltc,
+                    wallet_address: transaction.wallet_address,
+                    created_at: transaction.created_at,
+                    status: transaction.status,
+                    product_id: transaction.product_id
+                }
+            });
+        } else {
+            // If no active transactions, return false
+            res.json({ hasActiveTransaction: false });
+        }
+    } catch (error) {
+        console.error('Error querying database:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/api/create-transaction', async (req, res) => {
+    const { user_id, price, amount_in_ltc, wallet_address, product_id } = req.body;
+
+    // Validate input data
+    if (!user_id || !price || !amount_in_ltc || !wallet_address || !product_id) {
+        return res.status(400).send('All fields are required.');
+    }
+
+    // Convert input data to correct types
+    const userIdInt = parseInt(user_id, 10);
+    const priceFloat = parseFloat(price);
+    const amountInLtcFloat = parseFloat(amount_in_ltc);
+
+    try {
+        // Check for existing transaction with the same user_id and product_id
+        const checkQuery = `
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE user_id = $1
+              AND product_id = $2
+        `;
+
+        const checkResult = await client.query(checkQuery, [userIdInt, product_id]);
+        const count = parseInt(checkResult.rows[0].count, 10);
+
+        if (count > 0) {
+            // Existing transaction found, do nothing
+            console.log('Duplicate transaction detected, no new record created.');
+            return res.status(200).send('Duplicate transaction detected, no new record created.');
+        }
+
+        // Insert new transaction into the database
+        const insertQuery = `
+            INSERT INTO orders (user_id, price, amount_in_ltc, wallet_address, status, product_id)
+            VALUES ($1, $2, $3, $4, 'pending', $5)
+        `;
+
+        await client.query(insertQuery, [userIdInt, priceFloat, amountInLtcFloat, wallet_address, product_id]);
+
+        res.status(200).send('Transaction created successfully.');
+    } catch (err) {
+        console.error('Error creating transaction:', err.message);
+        res.status(500).send('Error creating transaction.');
+    }
+});
+
+
+
+
+
+
+
 
 // Route to delete a transaction
 app.post('/api/deleteTransaction', async (req, res) => {
-    const { productId } = req.body;
+    const { productId, userId } = req.body;
 
-    if (!productId) {
-        return res.status(400).send('Product ID is required.');
+    console.log('Received delete request:', { productId, userId }); // Log incoming request
+
+    if (!productId || !userId) {
+        console.log('Product ID or User ID missing');
+        return res.status(400).send('Product ID and User ID are required.');
     }
 
     try {
-        const result = await client.query('DELETE FROM transactions WHERE product_id = $1 RETURNING *', [productId]);
+        const result = await client.query(
+            'DELETE FROM orders WHERE product_id = $1 AND user_id = $2 RETURNING *',
+            [productId, userId]
+        );
+
+        console.log('Delete result:', result); // Log query result
 
         if (result.rowCount > 0) {
             res.send('Transaction deleted successfully.');
@@ -417,6 +567,7 @@ app.post('/api/deleteTransaction', async (req, res) => {
         res.status(500).send('Error deleting transaction.');
     }
 });
+
 
 // Route to delete a product
 app.delete('/product/:identifier', async (req, res) => {
@@ -433,6 +584,27 @@ app.delete('/product/:identifier', async (req, res) => {
     } catch (err) {
         console.error('Error deleting product:', err.message);
         res.status(500).send('Error deleting product.');
+    }
+});
+app.get('/api/getBalance', async (req, res) => {
+    const { userId } = req.query;
+
+    if (!userId) {
+        return res.status(400).send('User ID is required');
+    }
+
+    try {
+        const result = await client.query('SELECT balance FROM users WHERE user_id = $1', [userId]);
+        
+        if (result.rows.length > 0) {
+            const balance = result.rows[0].balance;
+            res.json({ balance: balance });
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error fetching balance:', error.message);
+        res.status(500).send('Internal Server Error');
     }
 });
 
@@ -464,8 +636,79 @@ app.get('/product/:identifier', async (req, res) => {
         res.status(500).send('Error retrieving product.');
     }
 });
+app.post('/api/get-user-transactions', async (req, res) => {
+    const { address, userId} = req.body;
 
+    if (!address) {
+        return res.status(400).json({ flag: 0, msg: 'Address is required.' });
+    }
 
+    try {
+        const response = await axios.post('https://coinremitter.com/api/v3/LTC/get-transaction-by-address', {
+            api_key: '$2b$10$ZpskXdVsknpQzMrX5qAZTujyedQaz0Dxo1DQqlHi6sxoF5eUTJMZK',
+            password: 'test2023',
+            address: address
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const transactions = response.data.data; // Access the 'data' array directly
+
+        if (!Array.isArray(transactions)) {
+            return res.status(500).json({ flag: 0, msg: 'Unexpected response format from API.' });
+        }
+
+        try {
+            await client.query('BEGIN');
+
+            for (const tx of transactions) {
+                const { id, amount } = tx;
+
+                const result = await client.query('SELECT id FROM transfers WHERE tx_id = $1', [id]);
+
+                if (result.rows.length > 0) {
+                    await client.query(
+                        'UPDATE transfers SET amount = $1, wallet_address = $2 WHERE tx_id = $3',
+                        [amount, address, id]
+                    );
+                } else {
+                    await client.query(
+                        'INSERT INTO transfers (tx_id, amount, user_id, wallet_address) VALUES ($1, $2, $3, $4)',
+                        [id, amount, userId, address]
+                    );
+                }
+            }
+
+            await client.query('COMMIT');
+        } catch (dbError) {
+            await client.query('ROLLBACK');
+            console.error('Database error:', dbError.message);
+            return res.status(500).json({ flag: 0, msg: 'Failed to sync transactions with the database.' });
+        }
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching transactions:', error.message);
+        res.status(500).json({ flag: 0, msg: 'Failed to fetch transactions.' });
+    }
+});
+
+async function getLtcToUsdRate() {
+    try {
+        const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+            params: {
+                ids: 'litecoin',
+                vs_currencies: 'usd'
+            }
+        });
+        return response.data.litecoin.usd;
+    } catch (error) {
+        console.error('Error fetching LTC to USD rate:', error.message);
+        throw error;
+    }
+}
 app.post('/webhook', (req, res) => {
     const form = new formidable.IncomingForm();
 
@@ -476,117 +719,157 @@ app.post('/webhook', (req, res) => {
             return;
         }
 
-        // Extract form data
-        const address_label = Array.isArray(fields.address_label) ? fields.address_label[0] : fields.address_label;
+        const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
         const amount = fields.amount;
+        const type = fields.type;
+        const txId = fields.id;
 
-        console.log('Received address_label:', address_label);
+        console.log('Received address:', address);
         console.log('Received amount:', amount);
+        console.log('Received type:', type);
+        console.log('Received tx_id:', txId);
 
-        const trimmedAddressLabel = address_label;
-        const amountInFloat = parseFloat(amount);
+        if (type === 'receive') {
+            try {
+                // Check if a transaction with the given tx_id exists in the transfers table
+                const txCheckResult = await client.query(
+                    'SELECT 1 FROM transfers WHERE tx_id = $1',
+                    [txId]
+                );
 
-        try {
-            // Query the database for all transactions
-            const allTransactions = await client.query('SELECT * FROM transactions');
-            console.log('All transactions in the database:');
-            allTransactions.rows.forEach((transaction, index) => {
-                console.log(`Transaction ${index + 1}:`, transaction);
-            });
+                if (txCheckResult.rows.length > 0) {
+                    console.log('Transaction with the given tx_id already exists.');
+                    res.status(400).send('Transaction already exists');
+                    return;
+                }
 
-            // Query for specific transactions for the given user
-            const result = await client.query(
-                'SELECT amount_in_dash, product_id FROM transactions WHERE user_id = $1',
-                [trimmedAddressLabel]
-            );
+                const trimmedAddressLabel = address;
+                const amountInFloat = parseFloat(amount);
 
-            if (result.rows.length > 0) {
-                const amountInDash = result.rows[0].amount_in_dash;
-                const productId = result.rows[0].product_id;
+                // Get LTC to USD conversion rate
+                const ltcToUsdRate = await getLtcToUsdRate();
+                const amountInUsd = amountInFloat * ltcToUsdRate;
 
-                console.log('Amount in dash from database:', amountInDash);
+                // Add the received amount to the user's balance
+                await client.query(
+                    'UPDATE users SET balance = balance + $1 WHERE wallet_address = $2',
+                    [amountInUsd, trimmedAddressLabel]
+                );
+                console.log('User balance updated successfully.');
 
-                const acceptableDifference = 1; // $1 tolerance
-                if (amountInFloat >= amountInDash - acceptableDifference) {
-                    console.log('Transaction valid.');
+                // Check for pending orders for the user
+                const ordersResult = await client.query(
+                    'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
+                    [trimmedAddressLabel]
+                );
 
-                    // Delete the transaction from the database
-                    await client.query('DELETE FROM transactions WHERE product_id = $1', [productId]);
-                    console.log('Transaction deleted successfully.');
+                if (ordersResult.rows.length > 0) {
+                    // There are pending orders
+                    const amountInLtc = ordersResult.rows[0].amount_in_ltc;
+                    const productId = ordersResult.rows[0].product_id;
+                    const userId = ordersResult.rows[0].user_id;
 
-                    // Delete the product from the database
-                    await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
-                    console.log('Product deleted successfully.');
 
-                    // Fetch product information for sending to user
-                    const productResult = await client.query(
-                        'SELECT location_image, latitude, longitude FROM products WHERE identifier = $1',
-                        [productId]
-                    );
+                    console.log('Amount in LTC from database:', amountInLtc);
 
-                    if (productResult.rows.length > 0) {
-                        const row = productResult.rows[0];
-                        const latitude = (row.latitude || '').trim();
-                        const longitude = (row.longitude || '').trim();
+                    const acceptableDifference = 1; // $1 tolerance
+                    if (amountInFloat >= amountInLtc - acceptableDifference) {
+                        console.log('Transaction valid.');
 
-                        if (row.location_image) {
-                            // Save the image as a JPG file
-                            const filePath = path.join(__dirname, 'location_image.jpg');
-                            fs.writeFile(filePath, row.location_image, 'base64', (err) => {
-                                if (err) {
-                                    console.error('Error saving image:', err.message);
-                                    return;
-                                }
-                                console.log('Image saved successfully.');
+                        // Deduct the amount needed for the product
+                        await client.query(
+                            'UPDATE users SET balance = balance - $1 WHERE wallet_address = $2',
+                            [amountInLtc * ltcToUsdRate, trimmedAddressLabel]
+                        );
+                        console.log('User balance updated after deducting product price.');
 
-                                // Send the image to the user via Telegram
-                                bot.telegram.sendPhoto(trimmedAddressLabel, { source: filePath })
-                                    .then(() => {
-                                        console.log('Image sent successfully.');
-                                        // Delete the image file after sending
-                                        fs.unlink(filePath, (err) => {
-                                            if (err) {
-                                                console.error('Error deleting image:', err.message);
-                                            } else {
-                                                console.log('Image deleted successfully.');
-                                            }
+                        // Delete the transaction from the orders table
+                        await client.query('DELETE FROM orders WHERE product_id = $1 AND wallet_address = $2', [productId, trimmedAddressLabel]);
+                        console.log('Transaction deleted successfully.');
+
+                        // Delete the product from the database
+                        await client.query('DELETE FROM products WHERE identifier = $1', [productId]);
+                        console.log('Product deleted successfully.');
+
+                        // Fetch product information for sending to user
+                        const productResult = await client.query(
+                            'SELECT location_image, latitude, longitude FROM products WHERE identifier = $1',
+                            [productId]
+                        );
+
+                        if (productResult.rows.length > 0) {
+                            const row = productResult.rows[0];
+                            const latitude = (row.latitude || '').trim();
+                            const longitude = (row.longitude || '').trim();
+
+                            if (row.location_image) {
+                                // Save the image as a JPG file
+                                const filePath = path.join(__dirname, 'location_image.jpg');
+                                fs.writeFile(filePath, row.location_image, 'base64', (err) => {
+                                    if (err) {
+                                        console.error('Error saving image:', err.message);
+                                        return;
+                                    }
+                                    console.log('Image saved successfully.');
+
+                                    // Send the image to the user via Telegram
+                                    bot.telegram.sendPhoto(userId, { source: filePath })
+                                        .then(() => {
+                                            console.log('Image sent successfully.');
+                                            // Delete the image file after sending
+                                            fs.unlink(filePath, (err) => {
+                                                if (err) {
+                                                    console.error('Error deleting image:', err.message);
+                                                } else {
+                                                    console.log('Image deleted successfully.');
+                                                }
+                                            });
+                                        })
+                                        .catch(error => {
+                                            console.error('Error sending image to Telegram:', error.message);
                                         });
-                                    })
-                                    .catch(error => {
-                                        console.error('Error sending image to Telegram:', error.message);
-                                    });
+
+                                    // Send confirmation message to user
+                                    bot.telegram.sendMessage(userId, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                                });
+                            } else {
+                                console.log('No location image found for the product.');
+                                // Send a message without image if needed
+                                bot.telegram.sendMessage(userId, 'Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:');
 
                                 // Send confirmation message to user
-                                bot.telegram.sendMessage(trimmedAddressLabel, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
-                            });
+                                bot.telegram.sendMessage(userId, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                            }
                         } else {
-                            console.log('No location image found for the product.');
-                            // Send a message without image if needed
-                            bot.telegram.sendMessage(trimmedAddressLabel, 'Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:');
-
-                            // Send confirmation message to user
-                            bot.telegram.sendMessage(trimmedAddressLabel, `Ձեր գործարքը վավեր է և հաջողությամբ մշակվել է:\nԿոորդինատներ : ${longitude}, ${latitude} \n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                            console.log('No product found for the given product ID.');
+                            bot.telegram.sendMessage(userId, `Ստացել ենք ձեր փոխանցումը բայց չկարողացանք հաստատել ապրանքի արկայությունը, խնդրեում ենք կապնվել օպերատորին`, { parse_mode: 'HTML' });
                         }
                     } else {
-                        console.log('No product found for the given product ID.');
-                        bot.telegram.sendMessage(trimmedAddressLabel, `Ստացել ենք ձեր փոխանցումը բայց չկարողացանք հաստատել ապրանքի արկայությունը, խնդրեում ենք կապնվել օպերատորին`, { parse_mode: 'HTML' });
+                        console.log('Transaction amount is less than required. Amount:', amountInFloat, 'Required:', amountInLtc);
+                        bot.telegram.sendMessage(userId, 'Գործարքի գումարը պահանջվածից պակաս է: ');
                     }
                 } else {
-                    console.log('Transaction amount is less than required. Amount:', amountInFloat, 'Required:', amountInDash);
-                    bot.telegram.sendMessage(trimmedAddressLabel, 'Գործարքի գումարը պահանջվածից պակաս է: ');
+                    // No pending orders for the user
+                    console.log('No transactions found for the user.');
+                    bot.telegram.sendMessage(userId, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
                 }
-            } else {
-                console.log('No transactions found for the user.');
-                bot.telegram.sendMessage(trimmedAddressLabel, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
-            }
 
-            res.status(200).send('Webhook received');
-        } catch (error) {
-            console.error('Error processing webhook:', error.message);
-            res.status(500).send('Internal Server Error');
+                res.status(200).send('Webhook received');
+            } catch (error) {
+                console.error('Error processing webhook:', error.message);
+                res.status(500).send('Internal Server Error');
+            }
+        } else {
+            console.log('Webhook type is not receive. Type:', type);
+            res.status(400).send('Invalid webhook type',type);
         }
     });
 });
+
+
+
+
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

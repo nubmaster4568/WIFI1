@@ -21,12 +21,12 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="balance-text">0.00 ֏</div>
+        <div class="balance-text">0.00 $</div>
         <a href="deposit.html" class="blue-balance-link">
             <button class="blue-balance">
-                Լիցքավորել 
+                Վերադառնալ 
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
         </a>
@@ -50,7 +50,8 @@
                 </div>
             </div>
             <a target="blank" class="chakra-link css-ktc5z2" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
-       
+            <button id="cancel-transaction" class="cancel-button">Չեղարկել գործարքը</button>
+
         </div>
 
         <div class="section-block" id="second-block">
@@ -75,101 +76,174 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const copyButton = document.getElementById('copy-button');
-            const walletAddressInput = document.getElementById('wallet-address');
-    
-            function getUrlParameter(name) {
-                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-                var results = regex.exec(location.search);
-                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-            }
-            const price = getUrlParameter('price');
+    <script>document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-button');
+        const walletAddressInput = document.getElementById('wallet-address');
+        const priceDiv = document.querySelector('.css-1m7ritw');
+        const LTCDiv = document.querySelector('.css-1m7ritw1');
+        const cancelButton = document.getElementById('cancel-transaction');
+        cancelButton.disabled = true;
+        const $balanceText = $('.balance-text');
 
-// Find the div and update its text content with the price
-const priceDiv = document.querySelector('.css-1m7ritw');
-if (priceDiv) {
-    priceDiv.textContent = `${price}`;
-}
-
-
-
-let ltcprice; 
-$.ajax({
-    url: 'https://api.coingecko.com/api/v3/simple/price',
-    method: 'GET',
-    data: {
-        ids: 'litecoin',       // Cryptocurrency ID (e.g., 'litecoin' for LTC)
-        vs_currencies: 'usd'   // Currency to compare against (e.g., 'usd')
-    },
-    success: function(response) {
-        if (response.litecoin) {
-            ltcprice = response.litecoin.usd;
-            var amountInLTC = parseFloat(price) / ltcprice;
-            const LTCDiv = document.querySelector('.css-1m7ritw1');
-if (LTCDiv) {
-    LTCDiv.textContent = `${amountInLTC.toFixed(3)} LTC`;
-}            console.log('Litecoin price in USD:', response.litecoin.usd);
-        } else {
-            console.log('Litecoin data not available');
+    // Enable the cancel button after 2 seconds
+    setTimeout(() => {
+        cancelButton.disabled = false;
+    }, 2000);
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-        console.error('AJAX request failed:', textStatus, errorThrown);
-    }
-});
-
-            var userId = getUrlParameter('userId');
-            
-            // Ensure userId is set correctly
+    
+        const price = getUrlParameter('price');
+        const userId = getUrlParameter('userId');
+        const productId = getUrlParameter('productId');
+    
+        function cancelTransaction(userId, productId) {
+            $.ajax({
+                url: 'https://wifi1-y84h.onrender.com/api/deleteTransaction', // Update to your server endpoint
+                method: 'POST',
+                data: JSON.stringify({
+                    userId: userId,
+                    productId: productId
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    alert('Գործարքը հաջողությամբ չեղարկվեց:');
+                    window.location.href = `index.html?userId=${userId}`;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Failed to cancel transaction:', textStatus, errorThrown);
+                    alert('Failed to cancel transaction.');
+                }
+            });
+        }
+    
+        if (priceDiv) {
+            priceDiv.textContent = `${price}`;
+        }
+    
+        if (userId) {
             sessionStorage.setItem('user', userId);
+            checkUserAndCreateWallet(userId);
+            updateLinksWithUserId(userId);
+        }
     
-            if (userId) {
-                checkUserAndCreateWallet(userId);
-    
-                // Update all links with userId parameter
-                $('a').each(function() {
-                    var href = $(this).attr('href'); // Get the current href attribute
-                    if (href) {
-                        if (href.indexOf('?') !== -1) {
-                            $(this).attr('href', href + '&userId=' + userId);
-                        } else {
-                            $(this).attr('href', href + '?userId=' + userId);
-                        }
+        $.ajax({
+            url: 'https://api.coingecko.com/api/v3/simple/price',
+            method: 'GET',
+            data: {
+                ids: 'litecoin',
+                vs_currencies: 'usd'
+            },
+            success: function(response) {
+                if (response.litecoin) {
+                    const ltcprice = response.litecoin.usd;
+                    const amountInLTC = parseFloat(price) / ltcprice;
+                    if (LTCDiv) {
+                        LTCDiv.textContent = `${amountInLTC.toFixed(3)} LTC`;
                     }
-                });
+
+                        createTransaction(userId, price, amountInLTC, sessionStorage.getItem('wallet'));
+
+                } else {
+                    console.error('Litecoin data not available');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX request failed:', textStatus, errorThrown);
             }
-    
-            function checkUserAndCreateWallet(userId) {
-                $.ajax({
-                    url: 'https://wifi1-y84h.onrender.com/api/check-user', // Make sure this URL is correct and accessible
-                    method: 'POST',
-                    data: JSON.stringify({ user_id: userId }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        const walletAddress = response.walletAddress;
-                        sessionStorage.setItem('wallet', walletAddress);
-                        typeWalletAddress(walletAddress, walletAddressInput, 50); // Adjust speed (ms) as needed
-                    },
-                    error: function() {
-                        console.error('Failed to check user.');
+            
+        });
+        $.ajax({
+            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            method: 'GET',
+            data: { userId: userId },
+            success: function(response) {
+                if (response && response.balance !== undefined) {
+                    // Ensure balance is a number
+                    let balance = parseFloat(response.balance);
+                    if (!isNaN(balance)) {
+                        $balanceText.text(`${balance.toFixed(2)} $`);
+                    } else {
+                        console.error('Balance is not a valid number:', response.balance);
                     }
-                });
+                } else {
+                    console.error('Invalid balance response:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching balance:', status, error);
             }
+        });
     
-            function typeWalletAddress(address, inputElement, speed) {
-                let index = 0;
-                const intervalId = setInterval(() => {
-                    inputElement.value += address.charAt(index);
-                    index++;
-                    if (index >= address.length) {
-                        clearInterval(intervalId);
+        function checkUserAndCreateWallet(userId) {
+            $.ajax({
+                url: 'https://wifi1-y84h.onrender.com/api/check-user',
+                method: 'POST',
+                data: JSON.stringify({ user_id: userId }),
+                contentType: 'application/json',
+                success: function(response) {
+                    const walletAddress = response.walletAddress;
+                    sessionStorage.setItem('wallet', walletAddress);
+                    typeWalletAddress(walletAddress, walletAddressInput, 50); // Adjust speed (ms) as needed
+                },
+                error: function() {
+                    console.error('Failed to check user.');
+                }
+            });
+        }
+    
+        function typeWalletAddress(address, inputElement, speed) {
+            let index = 0;
+            const intervalId = setInterval(() => {
+                inputElement.value += address.charAt(index);
+                index++;
+                if (index >= address.length) {
+                    clearInterval(intervalId);
+                }
+            }, speed); // Use the provided speed
+        }
+    
+        function updateLinksWithUserId(userId) {
+            $('a').each(function() {
+                let href = $(this).attr('href');
+                if (href) {
+                    if (href.indexOf('?') !== -1) {
+                        $(this).attr('href', href + '&userId=' + userId);
+                    } else {
+                        $(this).attr('href', href + '?userId=' + userId);
                     }
-                }, speed); // Use the provided speed
-            }
+                }
+            });
+        }
     
+        function createTransaction(userId, price, ltcAmount, walletAddress) {
+            console.log(userId, price, ltcAmount, walletAddress, productId)
+            $.ajax({
+                url: 'https://wifi1-y84h.onrender.com/api/create-transaction', // Replace with your server endpoint
+                method: 'POST',
+                data: JSON.stringify({
+                    user_id: userId,
+                    price: price,
+                    amount_in_ltc: ltcAmount,
+                    product_id: productId,
+                    wallet_address: walletAddress
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    alert('Գործարքը հաջողությամբ ստեղծվեց:');
+                    // Optionally, redirect to a confirmation page or update UI
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Failed to create transaction:', textStatus, errorThrown);
+                    alert('Failed to create transaction.');
+                }
+            });
+        }
+    
+        if (copyButton) {
             copyButton.addEventListener('click', function() {
                 navigator.clipboard.writeText(walletAddressInput.value)
                     .then(() => {
@@ -180,7 +254,18 @@ if (LTCDiv) {
                         alert('Failed to copy wallet address.');
                     });
             });
-        });
+        }
+    
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function() {
+                if (userId && productId) {
+                    cancelTransaction(userId, productId);
+                } else {
+                    alert('User ID or Product ID is missing.');
+                }
+            });
+        }
+    });
     </script>
     
             

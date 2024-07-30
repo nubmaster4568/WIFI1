@@ -12,6 +12,7 @@
     "express": "*",
     "formidable": "*",
     "multer": "*",
+    "node-telegram-bot-api": "^0.66.0",
     "pg": "*",
     "sharp": "*",
     "telegraf": "*"

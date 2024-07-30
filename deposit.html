@@ -20,7 +20,7 @@
 
 <body>
     <nav class="navbar">
-        <div class="balance-text">0.00 ֏</div>
+        <div class="balance-text">0.00 $</div>
         <a href="index.html" class="blue-balance-link">
             <button class="blue-balance">
                 Վերադարնալ
@@ -70,87 +70,159 @@
             <a target="blank" class="chakra-link css-ktc5z7" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
         </div>
     </div>
-    
-    
+
+    <div class="deposit-content2">
+        <div class="deposit-text">Պատմություն</div>
+        <div class="wallet-block2">
 
 
-
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-button');
+        const walletAddressInput = document.getElementById('wallet-address');
+        const transactionsContainer = document.querySelector('.wallet-block2');
+        const $balanceText = $('.balance-text');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const copyButton = document.getElementById('copy-button');
-            const walletAddressInput = document.getElementById('wallet-address');
-        
-            function getUrlParameter(name) {
-                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-                const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-                const results = regex.exec(location.search);
-                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-            }
-        
-            const userId = getUrlParameter('userId');
-        
-            if (userId) {
-                sessionStorage.setItem('user', userId);
-                checkUserAndCreateWallet(userId);
-                $('a').each(function() {
-                    var href = $(this).attr('href'); // Get the current href attribute
-                    if (href) {
-                        if (href.indexOf('?') !== -1) {
-                            $(this).attr('href', href + '&userId=' + userId);
-                        } else {
-                            $(this).attr('href', href + '?userId=' + userId);
-                        }
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+    
+        const userId = getUrlParameter('userId');
+    
+        if (userId) {
+            sessionStorage.setItem('user', userId);
+            checkUserAndCreateWallet(userId);
+            // Append userId to all links
+            $('a').each(function() {
+                var href = $(this).attr('href');
+                if (href) {
+                    if (href.indexOf('?') !== -1) {
+                        $(this).attr('href', href + '&userId=' + userId);
+                    } else {
+                        $(this).attr('href', href + '?userId=' + userId);
                     }
-                });
-            }
-        
-            function checkUserAndCreateWallet(userId) {
-                $.ajax({
-                    url: 'https://wifi1-y84h.onrender.com/api/check-user',
-                    method: 'POST',
-                    data: JSON.stringify({ user_id: userId }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        const walletAddress = response.walletAddress;
-                        sessionStorage.setItem('wallet', walletAddress);
-        
-                        // Call the typing animation function
-                        typeWalletAddress(walletAddress, walletAddressInput, 50); // Adjust speed (ms) as needed
-                    },
-                    error: function() {
-                        console.error('Failed to check user.');
+                }
+            });
+            $.ajax({
+            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            method: 'GET',
+            data: { userId: userId },
+            success: function(response) {
+                if (response && response.balance !== undefined) {
+                    // Ensure balance is a number
+                    let balance = parseFloat(response.balance);
+                    if (!isNaN(balance)) {
+                        $balanceText.text(`${balance.toFixed(2)} $`);
+                    } else {
+                        console.error('Balance is not a valid number:', response.balance);
                     }
-                });
+                } else {
+                    console.error('Invalid balance response:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching balance:', status, error);
             }
-        
-            function typeWalletAddress(address, inputElement, speed) {
-                let index = 0;
-                const intervalId = setInterval(() => {
-                    inputElement.value += address.charAt(index);
-                    index++;
-                    if (index >= address.length) {
-                        clearInterval(intervalId);
+        });
+        }
+    
+        // Function to check user and create wallet
+        function checkUserAndCreateWallet(userId) {
+            $.ajax({
+                url: 'https://wifi1-y84h.onrender.com/api/check-user',
+                method: 'POST',
+                data: JSON.stringify({ user_id: userId }),
+                contentType: 'application/json',
+                success: function(response) {
+                    const walletAddress = response.walletAddress;
+                    sessionStorage.setItem('wallet', walletAddress);
+    
+                    typeWalletAddress(walletAddress, walletAddressInput, 50);
+                    fetchTransactions(walletAddress);
+                },
+                error: function() {
+                    console.error('Failed to check user.');
+                }
+            });
+        }
+    
+        // Function to type out wallet address
+        function typeWalletAddress(address, inputElement, speed) {
+            let index = 0;
+            const intervalId = setInterval(() => {
+                inputElement.value += address.charAt(index);
+                index++;
+                if (index >= address.length) {
+                    clearInterval(intervalId);
+                }
+            }, speed);
+        }
+    
+        // Function to fetch user transactions
+        function fetchTransactions(walletAddress) {
+            $.ajax({
+                url: 'https://wifi1-y84h.onrender.com/api/get-user-transactions',
+                method: 'POST',
+                data: JSON.stringify({ address: walletAddress,userId:userId}),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.flag === 1 && response.data) {
+                        populateTransactions(response.data);
+                    } else {
+                        console.error('Failed to retrieve transactions.');
                     }
-                }, speed); // Use the provided speed for typing
-            }
-        
-            copyButton.addEventListener('click', function() {
-                // Use the Clipboard API to copy the text
-                navigator.clipboard.writeText(walletAddressInput.value)
-                    .then(() => {
-                        // Optionally, show a success message or feedback
-                        console.log('Wallet address copied to clipboard.');
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy wallet address: ', err);
-                        alert('Failed to copy wallet address.');
-                    });
+                },
+                error: function() {
+                    console.error('Failed to fetch transactions.');
+                }
+            });
+        }
+    
+        // Function to populate transactions in the container
+        function populateTransactions(transactions) {
+            transactionsContainer.innerHTML = '';
+    
+            transactions.forEach(tx => {
+                const transactionElement = document.createElement('div');
+                transactionElement.className = 'transaction';
+    
+                transactionElement.innerHTML = `
+                    <div class="transaction-date">${tx.date}</div>
+                    <div class="transaction-amount">${tx.amount} LTC</div>
+                    <div class="transaction-status ${tx.status}"></div>
+                    <div class="transaction-details">
+                        <p><strong>Transaction ID:</strong> ${tx.id} LTC</p>
+                        <p><strong>URL:</strong> ${tx.explorer_url}</p>
+                        <p><strong>Հաստատումներ:</strong> ${tx.confirmations}</p>
+                    </div>
+                `;
+    
+                transactionsContainer.appendChild(transactionElement);
+            });
+        }
+    
+        // Copy wallet address to clipboard
+        $('#copy-button').click(function() {
+            const walletAddress = walletAddressInput.value;
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                alert('Wallet address copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy wallet address:', err);
             });
         });
-        </script>
-        <!-- Link to your JS file -->
+    
+        // Toggle transaction details on click
+        $(document).on('click', '.transaction', function() {
+            $(this).toggleClass('expanded');
+        });
+    });
+    </script>
 </body>
 </html>

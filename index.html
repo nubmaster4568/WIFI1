@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Map with Product Locations</title>
+    <title>Shop Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="style.css" />
-
 </head>
 <body>
     <nav class="navbar">
-        <div class="balance-text">0.00 ֏</div>
+        <div class="balance-text">0.00 $</div>
         <a href="deposit.html" class="blue-balance-link">
             <button class="blue-balance">
                 Լիցքավորել 
@@ -21,27 +20,22 @@
             </button>
         </a>
     </nav>
-    
 
     <!-- Main Menu with Map and Product Grid -->
     <div class="main-menu">
         <div class="banner">
             <div class="banner-images">
-                <!-- First Image and Text -->
+                <!-- Banner images and text -->
                 <div class="banner-item">
                     <div class="css-11ktyzx">
                         <div class="css-10kwzia">Մաքուր խոտ<br> Մատչելի գնով</div>
                     </div>
                 </div>
-        
-                <!-- Second Image and Text -->
                 <div class="banner-item">
                     <div class="css-11ktyzx1">
                         <div class="css-10kwzia">ԹԱՓԱՆՑԻԿ <br> Meth</div>
                     </div>
                 </div>
-        
-                <!-- Third Image and Text -->
                 <div class="banner-item">
                     <div class="css-11ktyzx2">
                         <div class="css-10kwzia">ՇՈԿ-աին <br> Շոկ</div>
@@ -55,112 +49,50 @@
             </div>
         </div>
         
-    
         <div class="banner2">
             <div class="button-container">
-                <!-- Buttons -->
-
-
+                <!-- City buttons will be dynamically added here -->
             </div>
         </div>
-
-
         
-        </div>
         <div class="banner3">
-            <button class="product-type weed" data-value="Ինդիկա">Ինդիկա</button>
-
-            <button class="product-type meth" data-value="product-meth">Meth</button>
-
-            <button class="product-type shok" data-value="product-shok">Շոկ</button>
-
+            <!-- Location buttons will be dynamically added here -->
         </div>
-
+        
+        <div class="banner4">
+            <button class="product-type weed disabled" data-value="Ինդիկա">Ինդիկա</button>
+            <button class="product-type meth disabled" data-value="Meth">Meth</button>
+            <button class="product-type shok disabled" data-value="Շոկ">Շոկ</button>
+        </div>
     </div>
 
     <div class="product-menu">
         <div class="product-grid" id="product-grid"></div>
     </div>
-</div>
-
-    </div>
-
-    </div>
-        
-
-    
-
-
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-
     
-        </script>
+    <script>
+        $(document).ready(function() {
+            const $balanceText = $('.balance-text');
 
-        <script>
-            $(document).ready(function() {
-                const $banner3 = $('.banner3');
-                const $bannerImages = $('.banner-images');
-                const $dots = $('.dot');
-                const $prevBtn = $('.prev-btn');
-                const $nextBtn = $('.next-btn');
-                const imageCount = $dots.length;
-                let currentIndex = 0;
-                let autoScrollInterval;
-                const $banner2 = $('.banner2');
-                const $expandBtn = $('.expand-btn');
-                let isExpanded = false;
-                
-                let selectedLocation = ''; // Variable to store selected location
-                let selectedType = ''; // Variable to store selected type
-        
-                // Fetch locations and update banner2 with buttons
-                async function fetchLocations() {
-                    try {
-                        const response = await fetch('https://wifi1-y84h.onrender.com/api/locations'); // Fixed URL
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        const data = await response.json();
-                        return data.locations;
-                    } catch (error) {
-                        console.error('Error fetching locations:', error);
-                    }
-                }
-                
-                async function updateBanner2() {
-                    const locations = await fetchLocations();
-                    if (locations) {
-                        const $buttonContainer = $('.button-container');
-                        $buttonContainer.empty(); // Clear previous buttons
-        
-                        locations.forEach((location, index) => {
-                            const $button = $('<button></button>', {
-                                class: 'banner-button',
-                                text: location,
-                                'data-value': location,
-                                css: {
-                                    '--i': index + 1 // Set custom property for animation delay
-                                }
-                            });
-                            $button.on('click', function() {
-                                // Remove the selected class from all buttons
-                                $('.banner-button').removeClass('selected');
-                                // Add the selected class to the clicked button
-                                $(this).addClass('selected');
-                                // Set selected location
-                                selectedLocation = $(this).data('value');
-                                // Remove the gray overlay from banner3
-                                $banner3.addClass('visible');
-                            });
-                            $buttonContainer.append($button);
-                        });
-                    }
-                }
-        
-                function getUrlParameter(name) {
+            const $banner3 = $('.banner3');
+            const $banner2 = $('.banner2');
+            const $banner4 = $('.banner4');
+            const $dots = $('.dots .dot');
+            const imageCount = $dots.length;
+            const $prevBtn = $('.prev-btn');
+            const $nextBtn = $('.next-btn');
+            const $bannerImages = $('.banner-images');
+    
+            let selectedCityId = '';
+            let selectedLocation = '';
+            let selectedType = '';
+            let currentIndex = 0;
+            let autoScrollInterval;
+            function getUrlParameter(name) {
                     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
                     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
                     var results = regex.exec(location.search);
@@ -170,52 +102,220 @@
                 var userId = getUrlParameter('userId'); // Correctly get userId
         
                 if (userId) {
-                    $('a').each(function() {
-                        var href = $(this).attr('href'); // Get the current href attribute
-                        if (href) {
-                            if (href.indexOf('?') !== -1) {
-                                $(this).attr('href', href + '&userId=' + userId);
-                            } else {
-                                $(this).attr('href', href + '?userId=' + userId);
+            // Check for active transactions
+            $.ajax({
+    url: 'https://wifi1-y84h.onrender.com/api/checkActiveTransactions', // Endpoint to check active transactions
+    method: 'GET', // Ensure method matches the endpoint
+    data: { userId: userId }, // Send userId as query parameter
+    success: function(response) {
+        if (response.hasActiveTransaction) {
+            const transaction = response.transaction;
+            const redirectUrl = `/order.html?userId=${transaction.user_id}&productId=${transaction.product_id}&price=${transaction.price}`;
+            // Redirect to orders page with the transaction details
+            window.location.href = redirectUrl;
+        } else {
+            // Update links with userId parameter
+            $('a').each(function() {
+                var href = $(this).attr('href'); // Get the current href attribute
+                if (href) {
+                    if (href.indexOf('?') !== -1) {
+                        $(this).attr('href', href + '&userId=' + userId);
+                    } else {
+                        $(this).attr('href', href + '?userId=' + userId);
+                    }
+                }
+            });
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error('AJAX Error:', status, error);
+    }
+            });
+            $.ajax({
+            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            method: 'GET',
+            data: { userId: userId },
+            success: function(response) {
+                if (response && response.balance !== undefined) {
+                    // Ensure balance is a number
+                    let balance = parseFloat(response.balance);
+                    if (!isNaN(balance)) {
+                        $balanceText.text(`${balance.toFixed(2)} $`);
+                    } else {
+                        console.error('Balance is not a valid number:', response.balance);
+                    }
+                } else {
+                    console.error('Invalid balance response:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching balance:', status, error);
+            }
+        });
+        
+        
+        
+        
+        }
+            // Fetch and update cities
+            async function fetchCities() {
+                try {
+                    const response = await fetch('https://wifi1-y84h.onrender.com/api/cities');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.cities;
+                } catch (error) {
+                    console.error('Error fetching cities:', error);
+                }
+            }
+        
+            // Fetch and update locations based on cityId
+            async function fetchLocations(cityId) {
+                try {
+                    const response = await fetch(`https://wifi1-y84h.onrender.com/api/locations?cityId=${cityId}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.locations;
+                } catch (error) {
+                    console.error('Error fetching locations:', error);
+                }
+            }
+    
+            function updateBanner(index) {
+                $bannerImages.css('transform', `translateX(-${index * 100}%)`);
+                $dots.removeClass('active');
+                $dots.eq(index).addClass('active');
+            }
+    
+            function startAutoScroll() {
+                autoScrollInterval = setInterval(function() {
+                    currentIndex = (currentIndex + 1) % imageCount;
+                    updateBanner(currentIndex);
+                }, 3000);
+            }
+            
+            function stopAutoScroll() {
+                clearInterval(autoScrollInterval);
+            }
+            
+            // Initialize the banner
+            updateBanner(currentIndex);
+            startAutoScroll();
+    
+            // Click event for next button
+            $nextBtn.on('click', function() {
+                stopAutoScroll();
+                currentIndex = (currentIndex + 1) % imageCount;
+                updateBanner(currentIndex);
+                startAutoScroll();
+            });
+            
+            // Click event for previous button
+            $prevBtn.on('click', function() {
+                stopAutoScroll();
+                currentIndex = (currentIndex - 1 + imageCount) % imageCount;
+                updateBanner(currentIndex);
+                startAutoScroll();
+            });
+            
+            // Click event for dots
+            $dots.on('click', function() {
+                stopAutoScroll();
+                const index = $(this).index();
+                currentIndex = index;
+                updateBanner(currentIndex);
+                startAutoScroll();
+            });
+    
+            // Update city buttons in banner2
+            async function updateBanner2() {
+                const cities = await fetchCities();
+                if (cities) {
+                    const $buttonContainer = $('.button-container');
+                    $buttonContainer.empty();
+                    cities.forEach((city, index) => {
+                        const $button = $('<button></button>', {
+                            class: 'banner-button',
+                            text: city.city_name,
+                            'data-id': city.id,
+                            css: {
+                                '--i': index + 1
                             }
-                        }
+                        });
+                        $button.on('click', async function() {
+                            $('.banner-button').removeClass('selected');
+                            $(this).addClass('selected');
+                            selectedCityId = $(this).data('id');
+                            const locations = await fetchLocations(selectedCityId);
+                            updateBanner3(locations);
+                            $banner3.addClass('visible');
+                        });
+                        $buttonContainer.append($button);
                     });
                 }
-                
-                function fetchProducts(location, type) {
-                    $.ajax({
-                        url: 'https://wifi1-y84h.onrender.com/api/products',
-                        type: 'GET',
-                        data: {
-                            location: location,
-                            type: type
-                        },
-                        success: function(response) {
-                            const products = response.products;
-                            const $productGrid = $('#product-grid');
-                            
-                            products.forEach(product => {
-                                const productItem = $('<div>', { class: 'product-item' })
-                                    .attr('data-name', product.name)
-                                    .attr('data-price', `$${product.price.toFixed(2)}`)
-                                    .attr('data-lat', product.latitude)
-                                    .attr('data-lng', product.longitude)
-                                    .attr('data-type', product.type)
-                                    .attr('data-description', product.description)
-                                    .attr('data-image', product.product_image)
-                                    .attr('data-id', product.identifier)
-                                    .attr('data-location', product.location)
-                                    .html(`
-                                        <div class="product-price">$${product.price.toFixed(2)}</div>
-                                        <img src="${product.product_image}" alt="${product.name} Image">
-                                        <div class="product-specific">
-                                            <div class="product-weight">${product.weight}g</div>
-                                            <div class="product-location">${product.location}</div>
-                                            <div class="product-type1">${product.type}</div>
-                                        </div>
-                                        <button class="buy-button" data-id="${product.identifier}" data-price="${product.price}">Գնել</button>
-                                    `);
-                                    productItem.find('.buy-button').on('click', function() {
+            }
+        
+            // Update location buttons in banner3
+            function updateBanner3(locations) {
+                $banner3.empty();
+                if (locations && locations.length > 0) {
+                    locations.forEach((location, index) => {
+                        const $button = $('<button></button>', {
+                            class: 'banner-button2',
+                            text: location.location_name,
+                            'data-id': location.id,
+                            css: {
+                                '--i': index + 1
+                            }
+                        });
+                        $button.on('click', function() {
+                            $('.banner-button2').removeClass('selected');
+                            $(this).addClass('selected');
+                            selectedLocation = $(this).data('id');
+                            if (selectedLocation && selectedType) {
+                                fetchProducts(selectedLocation, selectedType);
+                            }
+                        });
+                        $banner3.append($button);
+                    });
+                } else {
+                    $banner3.append('<p>No locations available</p>');
+                }
+            }
+        
+            // Fetch and display products based on selected location and type
+            function fetchProducts(location, type) {
+                $.ajax({
+                    url: 'https://wifi1-y84h.onrender.com/api/products',
+                    type: 'GET',
+                    data: { location, type },
+                    success: function(response) {
+                        const products = response.products;
+                        const $productGrid = $('#product-grid');
+                        $productGrid.empty();
+                        products.forEach(product => {
+                            const productItem = $('<div>', { class: 'product-item' })
+                                .attr('data-name', product.name)
+                                .attr('data-price', `$${product.price.toFixed(2)}`)
+                                .attr('data-lat', product.latitude)
+                                .attr('data-lng', product.longitude)
+                                .attr('data-type', product.type)
+                                .attr('data-description', product.description)
+                                .attr('data-image', product.product_image)
+                                .attr('data-id', product.identifier)
+                                .attr('data-location', product.location)
+                                .html(`
+                                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                                    <img src="${product.product_image}" alt="${product.name}" class="product-image"/>
+                                    <div class="product-name">${product.name}</div>
+                                    <button class="buy-button" data-id="${product.identifier}" data-price="${product.price}">Գնել</button>
+
+                                `);
+                                productItem.find('.buy-button').on('click', function() {
                     const productId = $(this).data('id');
                     const productPrice = $(this).data('price');
                     const orderUrl = `order.html?userId=${userId}&productId=${productId}&price=${productPrice}`;
@@ -225,99 +325,50 @@
                                     .attr('data-id', product.identifier)
                                     .attr('data-price', product.price);
                                 
-                                // Append the product item and apply animation
-                                $productGrid.append(productItem);
-                                
-                                // Trigger the animation
-                                productItem.css('animation', 'fadeInUp 0.5s forwards');
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching products:', error);
-                        }
-                    });
-                }
-        
-                $expandBtn.on('click', function() {
-                    if (isExpanded) {
-                        $banner2.removeClass('expanded');
-                        $expandBtn.text('Expand');
-                    } else {
-                        $banner2.addClass('expanded');
-                        $expandBtn.text('Collapse');
-                    }
-                    isExpanded = !isExpanded;
-                });
-                
-                function updateBanner(index) {
-                    $bannerImages.css('transform', `translateX(-${index * 100}%)`);
-                    $dots.removeClass('active');
-                    $dots.eq(index).addClass('active');
-                }
-                
-                function startAutoScroll() {
-                    autoScrollInterval = setInterval(function() {
-                        currentIndex = (currentIndex + 1) % imageCount;
-                        updateBanner(currentIndex);
-                    }, 3000);
-                }
-                
-                function stopAutoScroll() {
-                    clearInterval(autoScrollInterval);
-                }
-                
-                // Initialize the banner
-                updateBanner(currentIndex);
-                startAutoScroll();
-                
-                // Click event for next button
-                $nextBtn.on('click', function() {
-                    stopAutoScroll();
-                    currentIndex = (currentIndex + 1) % imageCount;
-                    updateBanner(currentIndex);
-                    startAutoScroll();
-                });
-                
-                // Click event for previous button
-                $prevBtn.on('click', function() {
-                    stopAutoScroll();
-                    currentIndex = (currentIndex - 1 + imageCount) % imageCount;
-                    updateBanner(currentIndex);
-                    startAutoScroll();
-                });
-                
-                // Click event for dots
-                $dots.on('click', function() {
-                    stopAutoScroll();
-                    const index = $(this).index();
-                    currentIndex = index;
-                    updateBanner(currentIndex);
-                    startAutoScroll();
-                });
-                
-                // Initialize buttons in banner2
-                updateBanner2();
-                
-                // Add click event handling for banner3 buttons
-                $('.product-type').on('click', function() {
-                    $('.product-grid').empty();
-                    // Remove the selected class from all buttons in banner3
-                    $('.product-type').removeClass('selected');
-                    // Add the selected class to the clicked button
-                    $(this).addClass('selected');
-                    // Set selected type
-                    selectedType = $(this).data('value');
-                    
-                    // Check if both location and type are selected
-                    if (selectedLocation && selectedType) {
-                        console.log(selectedLocation, selectedType);
-                        fetchProducts(selectedLocation, selectedType);
+                            $productGrid.append(productItem);
+                            productItem.css('animation', 'fadeInUp 0.5s forwards');
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching products:', error);
                     }
                 });
-            });
-        </script>
+            }
         
-        
+            // Handle product type selection
+            function updateProductTypeButtons() {
+                if (selectedLocation && selectedCityId) {
+                    $banner4.find('.product-type').removeClass('disabled');
+                } else {
+                    $banner4.find('.product-type').addClass('disabled');
+                }
+            }
             
+            $banner4.on('click', '.product-type', function() {
+                if ($(this).hasClass('disabled')) {
+                    return; // Do nothing if button is disabled
+                }
+                $('.product-type').removeClass('selected');
+                $(this).addClass('selected');
+                selectedType = $(this).data('value');
+                if (selectedLocation && selectedType) {
+                    fetchProducts(selectedLocation, selectedType);
+                }
+            });
+    
+            // Initialize
+            updateBanner2();
+            
+            // Update product type button state when city or location changes
+            $('.banner2').on('click', '.banner-button', function() {
+                updateProductTypeButtons();
+            });
+    
+            $('.banner3').on('click', '.banner-button2', function() {
+                updateProductTypeButtons();
+            });
+        });
+    </script>
+    
 </body>
 </html>

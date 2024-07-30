@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Product Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .upload-form-container,
+        .search-form-container {
+            display: none; /* Hide forms initially */
+        }
+        .upload-form-container.active,
+        .search-form-container.active {
+            display: block; /* Show active form */
+        }
+
+        /* Loading spinner styles */
+        .loading-spinner {
+            display: none;
+            position: absolute; /* Hidden by default */
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="mobile">
+
+
+    <div class="selection-container">
+        <button id="upload-btn">Ավելացնել ապրանք</button>
+        <button id="search-btn">Որոնել ապրանք</button>
+    </div>
+
+    <div id="upload-form-container" class="upload-form-container">
+        <h1>Ավելացնել ապրանք</h1>
+        <form id="product-form">
+            <div class="form-group">
+                <label for="latitude">Լայնություն (Latitude):</label>
+                <input type="text" id="latitude" name="latitude" required>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Երկայնություն (Longitude):</label>
+                <input type="text" id="longitude" name="longitude" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Քաշը:</label>
+                <input type="number" id="weight" name="weight" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Գին ($):</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Ապրանքի անվանումը:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="type">Տեսակ:</label>
+                <select id="type" name="type" required>
+                    <option value="Ինդիկա">Ինդիկա</option>
+                    <option value="Սատիվա">Սատիվա</option>
+                    <option value="Քար">Քար</option>
+                    <option value="Կոկաին">Կոկաին</option>
+                    <option value="Lxtz">Lxtz</option>
+                    <option value="LSD">LSD</option>
+                    <option value="Շոկո">Շոկո</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="city">Քաղաք:</label>
+                <select id="city" name="city" required>
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="location">Տեղադրման վայր:</label>
+                <select id="location" name="location" required>
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="identifier">Նույնականացուցիչ:</label>
+                <input type="text" id="identifier" name="identifier" readonly>
+            </div>
+            <div class="form-group">
+                <label for="productImage">Ապրանքի պատկեր:</label>
+                <input type="file" id="productImage" name="productImage" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="locationImage">Տեղադրության պատկեր:</label>
+                <input type="file" id="locationImage" name="locationImage" accept="image/*" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div id="search-form-container" class="search-form-container">
+        <h1>Որոնել ապրանք</h1>
+        <form id="search-form">
+            <div class="form-group">
+                <label for="search-identifier">Նույնականացուցիչ:</label>
+                <input type="text" id="search-identifier" name="search-identifier" required>
+            </div>
+            <button type="submit">Search</button>
+        </form>
+        <div id="search-results"></div>
+    </div>
+
+    <div class="loading-spinner"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Utility function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+    
+        var userUserId = getUrlParameter('userId');
+        if (userUserId) {
+            $('a').each(function() {
+                var href = $(this).attr('href'); // Get the current href attribute
+                if (href) {
+                    // Check if href already contains a query string
+                    $(this).attr('href', href.indexOf('?') !== -1 ? href + '&userId=' + userUserId : href + '?userId=' + userUserId);
+                }
+            });
+        }
+    
+        // Function to fetch cities and locations from the updated API
+        function fetchCitiesAndLocations() {
+    fetch('https://wifi1-y84h.onrender.com/api/cities')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Inspect the data structure
+
+            const citySelect = document.getElementById('city');
+            const locationSelect = document.getElementById('location');
+
+            // Clear existing options
+            citySelect.innerHTML = '';
+            locationSelect.innerHTML = '';
+
+            // Add default options
+            citySelect.appendChild(new Option('Ընտրել քաղաք', ''));
+            locationSelect.appendChild(new Option('Ընտրել վայր', ''));
+
+            // Check if data is an array or contains a cities property with an array
+            if (Array.isArray(data)) {
+                data.forEach(city => {
+                    citySelect.appendChild(new Option(city.city_name, city.id)); // Access city_name and id
+                });
+            } else if (data.cities && Array.isArray(data.cities)) {
+                data.cities.forEach(city => {
+                    citySelect.appendChild(new Option(city.city_name, city.id)); // Access city_name and id
+                });
+            } else {
+                console.error('Expected an array of cities or a cities property with an array, but got:', data);
+            }
+
+            // Populate locations based on the selected city
+            citySelect.addEventListener('change', function() {
+                const selectedCityId = citySelect.value;
+                if (selectedCityId) {
+                    fetch(`https://wifi1-y84h.onrender.com/api/locations?cityId=${encodeURIComponent(selectedCityId)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            locationSelect.innerHTML = '';
+                            locationSelect.appendChild(new Option('Ընտրել վայր', ''));
+                            if (Array.isArray(data)) {
+                                data.forEach(location => {
+                                    locationSelect.appendChild(new Option(location.location_name, location.id)); // Access location_name and id
+                                });
+                            } else if (data.locations && Array.isArray(data.locations)) {
+                                data.locations.forEach(location => {
+                                    locationSelect.appendChild(new Option(location.location_name, location.id)); // Access location_name and id
+                                });
+                            } else {
+                                console.error('Expected an array of locations or a locations property with an array, but got:', data);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching locations:', error);
+                            alert('Error loading locations. Please try again.');
+                        });
+                } else {
+                    locationSelect.innerHTML = '';
+                    locationSelect.appendChild(new Option('Ընտրել վայր', ''));
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching cities:', error);
+            alert('Error loading cities. Please try again.');
+        });
+}
+
+function generateIdentifier(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchCitiesAndLocations();
+    
+            // Generate a random identifier when the page loads
+            const identifierField = document.getElementById('identifier');
+            identifierField.value = generateIdentifier(10); // Generate a 10-character identifier
+        });
+    
+        // Toggle between upload and search forms
+        document.getElementById('upload-btn').addEventListener('click', function () {
+            document.getElementById('upload-form-container').classList.add('active');
+            document.getElementById('search-form-container').classList.remove('active');
+        });
+    
+        document.getElementById('search-btn').addEventListener('click', function () {
+            document.getElementById('search-form-container').classList.add('active');
+            document.getElementById('upload-form-container').classList.remove('active');
+        });
+    
+        // Handle product form submission
+// Handle product form submission
+document.getElementById('product-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    document.querySelector('.loading-spinner').style.display = 'block';
+    const formData = new FormData(this);
+
+    fetch('https://wifi1-y84h.onrender.com/upload-product', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Check if response is not ok (status outside the range 200-299)
+            throw new Error(`Network response was not ok ${response.statusText}`);
+        }
+        // Check if response is JSON
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json(); // Parse JSON response
+        } else {
+            return response.text(); // Parse response as plain text
+        }
+    })
+    .then(data => {
+        document.querySelector('.loading-spinner').style.display = 'none';
+        if (typeof data === 'string') {
+            // Handle non-JSON response
+            console.log('Response text:', data);
+            alert('Product added successfully!');
+        } else {
+            // Handle JSON response
+            alert('Product added successfully!');
+            document.getElementById('product-form').reset();
+        }
+    })
+    .catch(error => {
+        document.querySelector('.loading-spinner').style.display = 'none';
+        console.error('Error:', error);
+        alert('An error occurred while adding the product. Please try again.');
+    });
+});
+
+        // Handle search form submission
+        document.getElementById('search-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const identifier = document.getElementById('search-identifier').value;
+
+    fetch(`https://wifi1-y84h.onrender.com/product/${identifier}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Fetched data:', data); // Log the full response data
+            
+            // Check if the product details are directly available in the data object
+            if (data && data.identifier) {
+                const resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = `
+                        <h2>Ապրանքը գտնվել է</h2>
+                        <p><strong>ID:</strong> ${data.identifier}</p>
+                        <p><strong>Անուն:</strong> ${data.name}</p>
+                        <p><strong>Գին:</strong> $${data.price}</p>
+                        <p><strong>Քաշը:</strong> ${data.weight} kg</p>
+                        <p><strong>Տիպ:</strong> ${data.type}</p>
+                        <p><strong>Latitude:</strong> ${data.latitude}</p>
+                        <p><strong>Longitude:</strong> ${data.longitude}</p>
+                                            <button id="delete-btn">Ջնջել Ապրանքը</button>
+
+                `;
+                document.getElementById('delete-btn').addEventListener('click', function () {
+    fetch(`https://wifi1-y84h.onrender.com/product/${data.identifier}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Ապրանքը հաջողությամբ ջնջվեց:');
+            // Clear the results container or update it as needed
+            document.getElementById('search-results').innerHTML = '';
+        } else {
+            throw new Error('Network response was not ok.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ապրանքը ջնջելիս սխալ տեղի ունեցավ: Խնդրում եմ կրկին փորձեք։');
+    });
+});
+
+            } else {
+                console.log('Data received but no product found:', data);
+                document.getElementById('search-results').innerHTML = '<p>No product found with the provided identifier.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching product:', error);
+            alert('An error occurred while fetching the product. Please try again.');
+        });
+});
+
+    </script>
+    
+
+</body>
+</html>

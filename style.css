@@ -37,7 +37,10 @@ body {
     border-radius: 15px;
     margin: 10px; /* Optional: Adds padding around the navbar */
 }
+.blue-balance-link {
+    text-decoration: none /* Ensures padding and border are included in the element's total width and height */
 
+}
 /* Style for the button */
 .blue-balance {
     display: flex; /* Use flexbox for alignment */
@@ -52,7 +55,8 @@ body {
     font-size: 16px;
     border-radius: 12px; 
     padding: 0 10px; /* Adds padding inside the button */
-    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+    box-sizing: border-box;
+    text-decoration: none /* Ensures padding and border are included in the element's total width and height */
 }
 
 /* Adjust font size if needed */
@@ -172,10 +176,16 @@ body {
     background: #2980b9;
     /* Darker blue or any color you prefer */
 }
+/* Style for selected buttons */
+.banner-button2.selected {
+    background: #2980b9;
+    /* Darker blue or any color you prefer */
+}
 
 /* Style for product-type buttons (add selected state if needed) */
 .product-type.meth.selected {
-    background: #1b5379 !important;  /* Darker blue or any color you prefer */
+    background: #2077b1 !important;
+    border: solid 1px white; /* Darker blue or any color you prefer */
 }
 /* Style for product-type buttons (add selected state if needed) */
 .product-type.weed.selected {
@@ -308,7 +318,36 @@ body {
     /* Ensure buttons are clickable */
     /* Smooth background color transition */
 }
+.banner-button2 {
+    width: 100px;
+    outline:1px white;
+    background: rgba(63, 71, 94, 0.6);
+    border: none; /* Removes default border */
+    color: white; /* White text */
+    padding: 10px 20px; /* Adds padding */
+    font-size: 10px; /* Sets font size */
+    border-radius: 5px; /* Rounds corners */
+    cursor: pointer; /* Changes cursor on hover */
+    transition: background-color 0.3s ease;
+    box-shadow: rgb(61, 71, 99) 0px 3px;
+    pointer-events: auto;
+    transition: background-color 0.3s ease, opacity 10s ease; /* Combined transition properties */
+    /* Ensure buttons are clickable */
+    /* Smooth background color transition */
+}
 .banner3 {
+    position: relative; /* Ensure the overlay is positioned relative to this container */
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 10px; /* Space between buttons */
+    height: auto; /* Adjust height automatically based on content */
+    width: 95%;
+    background-color: rgba(37, 39, 46); /* #25272e with 0.5 opacity */
+    margin: 10px auto;
+    border-radius: 15px;
+    padding: 10px 0px;
+}
+.banner4 {
     position: relative; /* Ensure the overlay is positioned relative to this container */
     display: flex;
     justify-content: center; /* Center buttons horizontally */
@@ -360,11 +399,17 @@ body {
     flex-direction: column;       /* Stack children vertically */
     align-items: center;          /* Center items horizontally */
     justify-content: flex-start;  /* Align items to the top */
-    height: 100vh;                /* Full viewport height */
     text-align: center;           /* Center text */
     padding-top: 20px;            /* Add some padding from the top */
 }
-
+.deposit-content2 {
+    display: flex;                /* Enable flexbox layout */
+    flex-direction: column;       /* Stack children vertically */
+    align-items: center;          /* Center items horizontally */
+    justify-content: flex-start;  /* Align items to the top */
+    text-align: center;           /* Center text */
+    padding-top: 20px;            /* Add some padding from the top */
+}
 /* Additional styling for the deposit-text */
 .deposit-text {
     color: white;
@@ -375,7 +420,6 @@ body {
 
 
 .product-type {
-    background: linear-gradient(135deg, rgb(48, 48, 48) 0%, rgb(70, 70, 70) 100%);
     border: none; /* Removes default border */
     color: white; /* White text */
     padding: 10px 30px; /* Adds padding */
@@ -388,19 +432,32 @@ body {
     justify-content: center; /* Center content horizontally */
     text-align: center;
     margin: 0; /* Reset margin */
+
 }
 
 .product-type.weed {
     background: linear-gradient(135deg, rgb(36, 138, 61) 0%, rgb(52, 238, 80) 100%);
     /* Green gradient background for weed type */
 }
+.product-type.weed.disabled{
+    background: rgba(63, 71, 94, 0.6);
+ 
+}
 .product-type.meth {
     background: linear-gradient(135deg, rgb(36, 39, 138) 0%, rgb(52, 74, 238) 100%);
     /* Green gradient background for weed type */
 }
+.product-type.meth.disabled{
+    background: rgba(63, 71, 94, 0.6);
+ 
+}
 .product-type.shok {
     background: linear-gradient(135deg, rgb(138, 73, 36) 0%, rgb(238, 142, 52) 100%);
     /* Green gradient background for weed type */
+}
+.product-type.shok.disabled{
+    background: rgba(63, 71, 94, 0.6);
+ 
 }
 .product-type:hover {
     background-color: #2980b9; /* Darker color on hover */
@@ -408,7 +465,13 @@ body {
 .button-container .banner-button:nth-child(n) {
     animation-delay: calc(0.1s * var(--i)); /* Delay for each button */
 }
+.button-container .banner-button2:nth-child(n) {
+    animation-delay: calc(0.1s * var(--i)); /* Delay for each button */
+}
 .banner-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+.banner-button2:hover {
     background-color: #2980b9; /* Darker blue on hover */
 }
 .button-container .banner-button {
@@ -417,6 +480,11 @@ body {
     animation: fadeIn 0.5s forwards; /* Apply animation */
 }
 
+.button-container .banner-button2 {
+    opacity: 0; /* Initial state for animation */
+    transform: translateY(20px); /* Initial state for animation */
+    animation: fadeIn 0.5s forwards; /* Apply animation */
+}
 
 .banner-button:hover {
     background-color: #2980b9; /* Darker blue on hover */
@@ -552,6 +620,82 @@ body {
 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+.wallet-block2 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    color: white;
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #25272e;
+    padding-bottom: 20px;
+    width: 90%;
+    gap: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Transaction styling */
+.transaction {
+    background-color: #2b2e36;
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column; /* Change to column to stack content */
+    padding: 10px;
+    transition: all 0.3s ease; /* Smooth transition for expand/collapse */
+    overflow: hidden; /* Ensures content doesn’t overflow the container */
+    position: relative; /* Needed for absolute positioning of details */
+    cursor: pointer; /* Indicates that the item is clickable */
+}
+
+/* Expanded state styling */
+.transaction.expanded {
+    height: auto; /* Height auto to fit content */
+}
+
+/* Transaction date and amount styling */
+.transaction-date, .transaction-amount {
+    color: #d5e2ff; /* Light color for text */
+    font-size: 14px; /* Slightly smaller text size */
+    margin-bottom: 5px; /* Spacing between date and amount */
+}
+
+/* Status indicator */
+.transaction-status {
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    background-color: #3fdb3f; /* Default confirmed color */
+    margin: 0 auto;
+    /* Spacing between status and other content */
+}
+
+/* Additional status colors (if needed) */
+.transaction-status.pending {
+    background-color: #ffeb3b; /* Example: yellow for pending */
+}
+
+.transaction-status.failed {
+    background-color: #ff5722; /* Example: red for failed */
+}
+
+/* Details section (hidden by default) */
+.transaction-details {
+    display: none; /* Hidden by default */
+    color: #d5e2ff; /* Light color for text */
+    font-size: 12px; /* Slightly smaller text size for details */
+    margin-top: 10px;
+    padding-top: 10px; /* Padding to separate from the main content */
+    border-top: 1px solid #444; /* Separator line */
+}
+
+/* Display details when expanded */
+.transaction.expanded .transaction-details {
+    display: block;
+}
+
+
 .wallet-title2 {
     font-size: 17px;
     font-weight: 600;
@@ -786,6 +930,28 @@ body {
     line-height: 20px;
     transition: all 0.2s ease 0s;
     margin-bottom: 8px;
+}
+.cancel-button {
+    margin-top:20px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    display: block;
+    height: 48px;
+    background: rgb(255, 25, 0);
+    box-shadow: rgba(51, 149, 255, 0.08) 0px 6px 20px 0px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    width: 100%;
+    transition: all 0.2s ease 0s;
+    margin: 0 auto;
+    border:none;
 }
 .css-1e6ma0l {
     display: flex;
