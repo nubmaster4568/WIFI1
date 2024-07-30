@@ -720,9 +720,9 @@ app.post('/webhook', (req, res) => {
         }
 
         const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
-        const amount = fields.amount;
-        const type = fields.type;
-        const txId = fields.id;
+        const amount = Array.isArray(fields.amount) ? fields.amount[0] : fields.amount;
+        const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
+        const txId = Array.isArray(fields.id) ? fields.id[0] : fields.id;
 
         console.log('Received address:', address);
         console.log('Received amount:', amount);
