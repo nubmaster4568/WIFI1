@@ -14,7 +14,10 @@ const path = require('path');
 const { Telegraf } = require('telegraf');
 const sharp = require('sharp');
 
+const token = '7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk';
 
+// Create a bot instance
+const bot = new Telegraf(token);
 // Create a new instance of the TelegramBot class
 // PostgreSQL connection
 
