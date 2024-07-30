@@ -729,6 +729,7 @@ app.post('/webhook', (req, res) => {
             'SELECT user_id FROM users WHERE wallet_address = $1',
             [address]
         );
+        console.log(userIdno)
         console.log('Received address:', address);
         console.log('Received amount:', amount);
         console.log('Received type:', type);
