@@ -726,7 +726,7 @@ app.post('/webhook', (req, res) => {
         const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
         const txId = Array.isArray(fields.id) ? fields.id[0] : fields.id;
         const userIdno = await client.query(
-            'SELECT userId FROM users WHERE wallet_address = $1',
+            'SELECT user_id FROM users WHERE wallet_address = $1',
             [address]
         );
         console.log('Received address:', address);
