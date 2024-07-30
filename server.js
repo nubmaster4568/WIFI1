@@ -774,6 +774,13 @@ app.post('/webhook', (req, res) => {
                 );
                 console.log('User balance updated successfully.');
 
+                // Record the transaction in the transfers table
+                await client.query(
+                    'INSERT INTO transfers (tx_id, amount, user_id, wallet_address) VALUES ($1, $2, $3, $4)',
+                    [txId, amountInUsd, userId, trimmedAddressLabel]
+                );
+                console.log('Transaction recorded in transfers table.');
+
                 // Check for pending orders for the user
                 const ordersResult = await client.query(
                     'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
