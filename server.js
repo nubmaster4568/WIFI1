@@ -592,8 +592,12 @@ app.post('/webhook', (req, res) => {
                 const amountInUsd = amountInFloat * ltcToUsdRate;
 
                 console.log('Updating balance for address:', trimmedAddressLabel, 'Amount in USD:', amountInUsd);
-                await client.query('UPDATE users SET balance = balance + $1 WHERE wallet_address = $2', [amountInUsd, trimmedAddressLabel]);
-
+console.log('Executing balance update query...');
+const updateResult = await client.query(
+    'UPDATE users SET balance = balance + $1 WHERE wallet_address = $2 RETURNING *',
+    [amountInUsd, trimmedAddressLabel]
+);
+console.log('Update result:', updateResult.rows);
                 const ordersResult = await client.query('SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1', [trimmedAddressLabel]);
                 if (ordersResult.rows.length > 0) {
                     const amountInLtc = ordersResult.rows[0].amount_in_ltc;
