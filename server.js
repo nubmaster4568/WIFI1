@@ -759,16 +759,14 @@ app.post('/webhook', (req, res) => {
 
                 // Check for pending orders for the user
                 const ordersResult = await client.query(
-                    'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
+                    'SELECT amount_in_ltc, product_id, user_id FROM orders WHERE wallet_address = $1',
                     [trimmedAddressLabel]
                 );
 
                 if (ordersResult.rows.length > 0) {
-                    // There are pending orders
                     const amountInLtc = ordersResult.rows[0].amount_in_ltc;
                     const productId = ordersResult.rows[0].product_id;
                     const userId = ordersResult.rows[0].user_id;
-
 
                     console.log('Amount in LTC from database:', amountInLtc);
 
@@ -861,10 +859,11 @@ app.post('/webhook', (req, res) => {
             }
         } else {
             console.log('Webhook type is not receive. Type:', type);
-            res.status(400).send('Invalid webhook type',type);
+            res.status(400).send('Invalid webhook type');
         }
     });
 });
+
 
 
 
