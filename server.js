@@ -725,18 +725,29 @@ app.post('/webhook', (req, res) => {
         const amount = Array.isArray(fields.amount) ? fields.amount[0] : fields.amount;
         const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
         const txId = Array.isArray(fields.id) ? fields.id[0] : fields.id;
-        const userIdno = await client.query(
-            'SELECT user_id FROM users WHERE wallet_address = $1',
-            [address]
-        );
-        console.log(userIdno)
+
         console.log('Received address:', address);
         console.log('Received amount:', amount);
         console.log('Received type:', type);
         console.log('Received tx_id:', txId);
 
-        if (type === 'receive') {
-            try {
+        try {
+            // Query user ID from database
+            const userIdResult = await client.query(
+                'SELECT user_id FROM users WHERE wallet_address = $1',
+                [address]
+            );
+
+            if (userIdResult.rows.length === 0) {
+                console.log('No user found with the provided address.');
+                res.status(404).send('User not found');
+                return;
+            }
+
+            const userId = userIdResult.rows[0].user_id;
+            console.log('User ID:', userId);
+
+            if (type === 'receive') {
                 // Check if a transaction with the given tx_id exists in the transfers table
                 const txCheckResult = await client.query(
                     'SELECT 1 FROM transfers WHERE tx_id = $1',
@@ -765,14 +776,13 @@ app.post('/webhook', (req, res) => {
 
                 // Check for pending orders for the user
                 const ordersResult = await client.query(
-                    'SELECT amount_in_ltc, product_id, user_id FROM orders WHERE wallet_address = $1',
+                    'SELECT amount_in_ltc, product_id FROM orders WHERE wallet_address = $1',
                     [trimmedAddressLabel]
                 );
 
                 if (ordersResult.rows.length > 0) {
                     const amountInLtc = ordersResult.rows[0].amount_in_ltc;
                     const productId = ordersResult.rows[0].product_id;
-                    const userId = ordersResult.rows[0].user_id;
 
                     console.log('Amount in LTC from database:', amountInLtc);
 
@@ -855,17 +865,17 @@ app.post('/webhook', (req, res) => {
                 } else {
                     // No pending orders for the user
                     console.log('No transactions found for the user.');
-                    bot.telegram.sendMessage(userIdno, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
+                    bot.telegram.sendMessage(userId, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
                 }
 
                 res.status(200).send('Webhook received');
-            } catch (error) {
-                console.error('Error processing webhook:', error.message);
-                res.status(500).send('Internal Server Error');
+            } else {
+                console.log('Webhook type is not receive. Type:', type);
+                res.status(400).send('Invalid webhook type');
             }
-        } else {
-            console.log('Webhook type is not receive. Type:', type);
-            res.status(400).send('Invalid webhook type');
+        } catch (error) {
+            console.error('Error processing webhook:', error.message);
+            res.status(500).send('Internal Server Error');
         }
     });
 });
