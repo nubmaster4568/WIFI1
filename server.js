@@ -536,7 +536,20 @@ app.get('/product/:identifier', async (req, res) => {
         res.status(500).send('Error retrieving product.');
     }
 });
-
+async function getLtcToUsdRate() {
+    try {
+        const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+            params: {
+                ids: 'litecoin',
+                vs_currencies: 'usd'
+            }
+        });
+        return response.data.litecoin.usd;
+    } catch (error) {
+        console.error('Error fetching LTC to USD rate:', error.message);
+        throw error;
+    }
+}
 
 app.post('/webhook', (req, res) => {
     const form = new formidable.IncomingForm();
