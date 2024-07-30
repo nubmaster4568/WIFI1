@@ -550,7 +550,7 @@ app.post('/webhook', (req, res) => {
 
         const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
         const amount = fields.amount;
-        const type = fields.type;
+        const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
         const txId = fields.id;
 
         console.log('Received address:', address);
