@@ -698,17 +698,14 @@ app.post('/api/get-user-transactions', async (req, res) => {
 });
 
 async function getLtcToUsdRate() {
+    const apiKey = '56f6ba30-b7cc-43f8-8e86-fbf3a1803b20'; // Replace with your API key
     try {
-        const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
-            params: {
-                ids: 'litecoin',
-                vs_currencies: 'usd'
-            }
+        const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=LTC', {
+            headers: { 'X-CMC_PRO_API_KEY': apiKey }
         });
-        return response.data.litecoin.usd;
+        return response.data.data.LTC.quote.USD.price;
     } catch (error) {
-        console.error('Error fetching LTC to USD rate:', error.message);
-        throw error;
+        throw new Error('Error fetching LTC to USD rate: ' + error.message);
     }
 }
 app.post('/webhook', (req, res) => {
