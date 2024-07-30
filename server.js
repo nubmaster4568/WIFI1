@@ -590,6 +590,10 @@ app.post('/webhook', (req, res) => {
 
                 const ltcToUsdRate = await getLtcToUsdRate();
                 const amountInUsd = amountInFloat * ltcToUsdRate;
+        await client.query(
+            'INSERT INTO transfers (tx_id, amount, user_id, wallet_address) VALUES ($1, $2, $3, $4)',
+            [txId, amountInFloat, userId, trimmedAddressLabel] // Make sure to provide the correct userId
+        );
 
                 console.log('Updating balance for address:', trimmedAddressLabel, 'Amount in USD:', amountInUsd);
 console.log('Executing balance update query...');
