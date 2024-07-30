@@ -189,10 +189,14 @@ body {
 }
 /* Style for product-type buttons (add selected state if needed) */
 .product-type.weed.selected {
-    background: #217d21 !important;  /* Darker blue or any color you prefer */
+    background: #217d21 !important;
+    border: solid 1px white; /* Darker blue or any color you prefer */
+    /* Darker blue or any color you prefer */
 }
 .product-type.shok.selected {
-    background: #7a531e !important;  /* Darker blue or any color you prefer */
+    background: #7a531e !important;
+    border: solid 1px white; /* Darker blue or any color you prefer */
+    /* Darker blue or any color you prefer */
 }
 .dot {
     width: 12px;

@@ -1,35 +1,36 @@
-const { Telegraf, TelegramError } = require('telegraf');
 
-// Replace with your own token
+
+const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
+const app = express();
+const port = process.env.PORT || 32020;
+
 const token = '7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk';
+const bot = new TelegramBot(token, { polling: true });
 
-// Create a bot instance
-const bot = new Telegraf(token);
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+      console.log(chatId)
+// Corrected variable name
+  bot.sendMessage(chatId, 'SHOP', {
 
-// Handle incoming messages
-bot.on('text', async (ctx) => {
-    try {
-        // Get chat ID
-        const chatId = ctx.chat.id;
-
-        // Print chat ID to the console
-        console.log('Chat ID:', chatId);
-
-        // Reply to the user
-        await ctx.reply(`Your chat ID is: ${chatId}`);
-    } catch (error) {
-        if (error instanceof TelegramError) {
-            console.error('TelegramError:', error.description);
-            // Additional error handling can be added here
-        } else {
-            console.error('Error:', error.message);
-        }
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: 'SHOP',
+            web_app: { url: `https://wifi1-y84h.onrender.com/?userId=${chatId}` }
+          }
+        ]
+      ]
     }
+  });
+  
+});
+app.get('/', (req, res) => {
+    res.send('Telegram Bot is running');
 });
 
-// Start the bot
-bot.launch().catch(error => {
-    console.error('Error launching bot:', error.message);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
-
-console.log('Bot is up and running');
