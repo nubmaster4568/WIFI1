@@ -547,12 +547,13 @@ app.post('/webhook', (req, res) => {
             res.status(400).send('Error parsing form');
             return;
         }
+        const getField = (field) => Array.isArray(field) ? field[0] : field;
 
-        const address = Array.isArray(fields.address) ? fields.address[0] : fields.address;
-        const amount = fields.amount;
-        const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
-        const txId = fields.id;
-
+        // Extract fields, ensuring they are single values
+        const address = getField(fields.address);
+        const amount = getField(fields.amount);
+        const type = getField(fields.type);
+        const txId = getField(fields.id);
         console.log('Received address:', address);
         console.log('Received amount:', amount);
         console.log('Received type:', type);
