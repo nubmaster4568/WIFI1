@@ -688,7 +688,7 @@ app.post('/webhook', (req, res) => {
             }
         } else {
             console.log('Webhook type is not receive. Type:', type);
-            res.status(400).send('Invalid webhook type');
+            res.status(400).send('Invalid webhook type',type);
         }
     });
 });
