@@ -725,7 +725,10 @@ app.post('/webhook', (req, res) => {
         const amount = Array.isArray(fields.amount) ? fields.amount[0] : fields.amount;
         const type = Array.isArray(fields.type) ? fields.type[0] : fields.type;
         const txId = Array.isArray(fields.id) ? fields.id[0] : fields.id;
-
+        const userIdno = await client.query(
+            'SELECT userId WHERE wallet_address = $1',
+            [address]
+        );
         console.log('Received address:', address);
         console.log('Received amount:', amount);
         console.log('Received type:', type);
@@ -851,7 +854,7 @@ app.post('/webhook', (req, res) => {
                 } else {
                     // No pending orders for the user
                     console.log('No transactions found for the user.');
-                    bot.telegram.sendMessage(userId, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
+                    bot.telegram.sendMessage(userIdno, 'Մենք չգտանք ձեր գործարքը մեր տվյալներում: ');
                 }
 
                 res.status(200).send('Webhook received');
@@ -865,8 +868,6 @@ app.post('/webhook', (req, res) => {
         }
     });
 });
-
-
 
 
 
