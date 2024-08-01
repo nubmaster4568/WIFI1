@@ -21,7 +21,7 @@ const bot = new Telegraf('7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk');
 // PostgreSQL connection
 
 const client = new Pool({
-    connectionString: 'postgresql://wifi_db_user:yGEtjMFrhK3m0oG8Tc8hglOqn9CaIhLT@dpg-cqj2e9mehbks73c4mh60-a.oregon-postgres.render.com/wifi_db',
+    connectionString: 'postgresql://wifi_db_2_user:9J9HNsfZGya3RgN62tvLdoyiRuvDNewD@dpg-cqlqpm8gph6c73e4n9i0-a.oregon-postgres.render.com/wifi_db_2',
     ssl: { rejectUnauthorized: false }
 });
 client.connect();
@@ -285,7 +285,7 @@ app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'lo
             .toBuffer();
 
         await client.query(`
-            INSERT INTO products (latitude, longitude, weight, price, name, type, location, identifier, product_image, location_image)
+            INSERT INTO products (latitude, longitude, weight, price, name, type, location_id, identifier, product_image, location_image)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `, [latitude, longitude, weight, price, name, type, location, identifier, compressedProductImage, compressedLocationImage]);
 
@@ -309,7 +309,7 @@ app.get('/api/products', async (req, res) => {
     const queryParams = [];
     
     if (location) {
-        query += ' AND location = $1';
+        query += ' AND location_id = $1';
         queryParams.push(location);
     }
     if (type) {

@@ -102,7 +102,7 @@
     
         function cancelTransaction(userId, productId) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/deleteTransaction', // Update to your server endpoint
+                url: 'http://localhost:3000/api/deleteTransaction', // Update to your server endpoint
                 method: 'POST',
                 data: JSON.stringify({
                     userId: userId,
@@ -157,7 +157,7 @@
             
         });
         $.ajax({
-            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            url: 'http://localhost:3000/api/getBalance', // Endpoint to fetch balance
             method: 'GET',
             data: { userId: userId },
             success: function(response) {
@@ -180,7 +180,7 @@
     
         function checkUserAndCreateWallet(userId) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/check-user',
+                url: 'http://localhost:3000/api/check-user',
                 method: 'POST',
                 data: JSON.stringify({ user_id: userId }),
                 contentType: 'application/json',
@@ -222,7 +222,7 @@
         function createTransaction(userId, price, ltcAmount, walletAddress) {
             console.log(userId, price, ltcAmount, walletAddress, productId)
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/create-transaction', // Replace with your server endpoint
+                url: 'http://localhost:3000/api/create-transaction', // Replace with your server endpoint
                 method: 'POST',
                 data: JSON.stringify({
                     user_id: userId,
