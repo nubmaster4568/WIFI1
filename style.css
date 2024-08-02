@@ -21,19 +21,21 @@
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #151515;
+    background-color: #181418;
 }
 .sections {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background-color: #151515;
 }
+
+
 .navbar {
     display: flex;
-    justify-content: space-around; /* Aligns items to the right */
+    justify-content: space-between; /* Aligns items to the right */
     align-items: center; /* Centers items vertically if needed */
-    padding: 10px;
-    background-color: #25272e;
+    padding: 5px 15px 5px 15px;
+    background-color: #25262e;
     border-radius: 15px;
     margin: 10px; /* Optional: Adds padding around the navbar */
 }
@@ -125,7 +127,6 @@ body {
     height: 168px;
     bottom: 0;
     right: 0;
-    background-image: url(weed-png-113-1.png);
     background-size: cover;
     background-repeat: no-repeat;
     z-index: -1;
@@ -138,7 +139,6 @@ body {
     height: 100px;
     bottom: 0px;
     right: 0px;
-    background-image: url(img/meth.png);
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
@@ -150,7 +150,6 @@ body {
     height: 100px;
     bottom: 0px;
     right: 0px;
-    background-image: url(img/Tobacco.png);
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
@@ -173,12 +172,12 @@ body {
 }
 /* Style for selected buttons */
 .banner-button.selected {
-    background: #2980b9;
+    background: #3729b9;
     /* Darker blue or any color you prefer */
 }
 /* Style for selected buttons */
 .banner-button2.selected {
-    background: #2980b9;
+    background: #3729b9;
     /* Darker blue or any color you prefer */
 }
 
@@ -212,14 +211,13 @@ body {
 
 
 .banner2 {
-    width: 95%;
-    background-color: #25272e;
+    display: flex;
     margin: 10px auto;
     border-radius: 15px;
-    overflow: hidden; /* Hide overflow for initial state */
-    position: relative; /* Position relative to contain the expand button */
-    max-height: 300px; /* Adjust this value based on the number of visible buttons */
-    transition: max-height 0.3s ease; /* Smooth transition for expanding */
+    overflow: hidden; /* Hide overflow of the banner itself */
+    position: relative;
+    max-height: 300px;
+    transition: max-height 0.3s ease;
 }
 
 /* When expanded, set max-height to accommodate all buttons */
@@ -271,7 +269,6 @@ body {
     height: 168px;
     bottom: 0px;
     right: 0px;
-    background-image: url(img/weed-png-113-1.png);
     background-size: cover;
     background-repeat: no-repeat;
     z-index: -1;
@@ -291,37 +288,43 @@ body {
     transition: background-color 0.3s ease;
 }
 .button-container {
+    display: flex; /* Lay out buttons horizontally */
     padding: 10px;
-    display: grid; /* Use grid layout */
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust grid columns */
-    gap: 20px; /* Space between buttons */
-    align-items: center; /* Centers buttons vertically */
-    justify-items: center; /* Centers buttons horizontally */
-    height: 100%; /* Makes container fill the banner */
-    max-height: 200px; /* Set a fixed height to make it scrollable */
-    overflow-y: auto; /* Enable vertical scrolling */
-    position: relative; /* Position relative to contain the shadow and gradient */
-}
+    padding-bottom: 50px;
+    height: 100%;
+    max-height: 200px;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+    position: relative;
+    white-space: nowrap; /* Prevent buttons from wrapping */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    scrollbar-width: none;}
 
-
+    .button-container::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Webkit browsers */
+    }
 
 .banner-button {
-    width: 100px;
-    outline:1px white;
-    background: rgba(63, 71, 94, 0.6);
-    border: none; /* Removes default border */
-    color: white; /* White text */
-    padding: 10px 20px; /* Adds padding */
-    font-size: 10px; /* Sets font size */
-    border-radius: 5px; /* Rounds corners */
-    cursor: pointer; /* Changes cursor on hover */
-    transition: background-color 0.3s ease;
+    margin-right: 10px; /* Space between buttons */
+    width: 60px; /* Fixed width */
+    height: 60px; /* Fixed height */
+    outline: 1px white;
+    background: rgba(67, 63, 94, 0.6);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 10s ease;
     box-shadow: rgb(61, 71, 99) 0px 3px;
     pointer-events: auto;
-    transition: background-color 0.3s ease, opacity 10s ease; /* Combined transition properties */
-    /* Ensure buttons are clickable */
-    /* Smooth background color transition */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Prevent buttons from shrinking */
 }
+
 .banner-button2 {
     width: 100px;
     outline:1px white;
@@ -339,17 +342,19 @@ body {
     /* Ensure buttons are clickable */
     /* Smooth background color transition */
 }
-.banner3 {
-    position: relative; /* Ensure the overlay is positioned relative to this container */
-    display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    gap: 10px; /* Space between buttons */
-    height: auto; /* Adjust height automatically based on content */
-    width: 95%;
-    background-color: rgba(37, 39, 46); /* #25272e with 0.5 opacity */
-    margin: 10px auto;
-    border-radius: 15px;
-    padding: 10px 0px;
+.banner-button .button-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+}
+.button-label {
+    margin-top: 60px; /* Adjust spacing as needed */
+    font-size: 11px; /* Adjust font size as needed */
+    color: #FFFFFF; /* Adjust color as needed */
+    text-align: center;
 }
 .banner4 {
     position: relative; /* Ensure the overlay is positioned relative to this container */
@@ -473,10 +478,10 @@ body {
     animation-delay: calc(0.1s * var(--i)); /* Delay for each button */
 }
 .banner-button:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+    background-color: #3729b9; /* Darker blue on hover */
 }
 .banner-button2:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+    background-color: #3729b9; /* Darker blue on hover */
 }
 .button-container .banner-button {
     opacity: 0; /* Initial state for animation */
@@ -491,7 +496,7 @@ body {
 }
 
 .banner-button:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+    background-color: #b73edf; /* Darker blue on hover */
 }
 
 
@@ -547,22 +552,35 @@ body {
     width: calc(100% - 40px);
     max-width: 400px;
     height: 40%;
-    background: rgb(54, 53, 53);
+    background: rgb(27, 25, 38);
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 15px;
     padding: 10px;
 }
+.product-price {
+    border: solid #383b97;
+    font-weight: 700;
+    display: flex;
+    padding: 5px;
+    border-radius: 20px;
+    padding-bottom: 1;
+    margin-bottom: 5px;
+    justify-content: center;
+    /* width: 50%; */
+    background-color: #827bca57;
+    box-shadow: 0 4px 80px rgba(124, 112, 255, 0.7);
+}
 .buy-button {
-    background-color: #0056b3;
+    border: solid 1px rgb(103 255 126);
+    background-color: #4dc52b9e;
     border-radius: 15px;
     color: white;
-    border: none;
-    border-radius: 5px;
+    border-radius: 50px;
     margin-top: 5px;
-    padding: 10px;
-    width: 100%;
+    padding: 5px;
+    width: 50%;
     cursor: pointer;
     font-size: 16px;
 }
@@ -581,13 +599,14 @@ body {
     background-color: #5757571a;
 }
 .product-item {
-    background-color: #282828;
+    background-color: #1a1926;
     color: white;
     padding: 10px;
     border-radius: 10px;
     text-align: center;
     transition: background-color 0.3s;
     overflow: hidden;
+    box-shadow: 0 10px 10px rgba(0, 38, 128, 0.3);
 }
 .product-item:active {
     background-color: #323232;
@@ -605,10 +624,50 @@ body {
 }
 
 
+.filters-container {
+    overflow-x: auto; /* Allows horizontal scrolling */
+    white-space: nowrap; /* Keeps buttons in a single line */
+    padding: 10px;
+    scrollbar-width: none;
+}
+
+    .filters-container::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Webkit browsers */
+    }
 
 
+    .filter-button {
+        display: inline-block;
+        background-color: rgba(63, 63, 94, 0.6);
+        color: white;
+        border: solid 1px #4f3bff57;
+        border-radius: 5px;
+        cursor: pointer;
+        position: relative;
+        margin-right: 10px;
+    }
 
+.filter-button select {
+    color: white;
+    border: none;
+    appearance: none; /* Hide default styling */
+    -webkit-appearance: none; /* For WebKit browsers */
+    -moz-appearance: none; /* For Firefox */
+    padding: 5px 30px 5px 10px;
+    border-radius: 5px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px; /* Adjust font size as needed */
+    line-height: 1.5; /* Ensure line height is consistent */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M19 9l-7 7-7-7" /%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Position the arrow */
+    background-size: 12px 12px; /* Size of the arrow, adjust as needed */
+}
 
+.filter-button select:focus {
+    outline: none; /* Remove default focus outline */
+}
 
 
 /* Wallet block styles */
@@ -1200,4 +1259,149 @@ body {
     user-select: none;
     transition: background-color 150ms ease-in-out;
     text-decoration: none;
+}
+
+.logo img {
+    width: 60px;
+    height: 60px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Modal background */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Disable scroll */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+}
+
+/* Modal content */
+.modal-content {
+    color: white;
+    position: absolute;
+    overflow: hidden;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 100%;
+    height: 90%;
+    background-color: #1d1c21;
+    border-radius: 10px;
+    box-shadow: inset 20px 20px 30px rgba(0, 42, 255, 0.08), 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.5s;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Close button */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 40px;
+    color: #ffcfff;
+    cursor: pointer;
+    z-index: 1100; /* Ensure close button is above modal content */
+}
+
+/* Modal slider */
+.modal-slider {
+    width: 100%;
+    margin-bottom: 20px; /* Space below slider */
+}
+
+/* Slick Slider styles */
+.slick-slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Modal name and description */
+.modal-title {
+    font-size: 24px;
+    margin: 20px 0 10px;
+}
+
+.modal-description {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.modal-price {
+    display: flex;
+    font-weight: 700;
+    font-size: 20px;
+    color: #ffffff;
+    width: fit-content;
+    background-color: #b07bca57;
+    border-radius: 15px;
+    justify-content: center;
+    padding: 5px 10px;
+    border: solid #903897;
+    box-shadow: 0 4px 80px rgba(216, 112, 255, 0.7);
+    margin: 10px 0;
+}
+
+/* Animation keyframes */
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%); /* Start from the bottom */
+    }
+    to {
+        transform: translate(-50%, -50%); /* End at center */
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Lower opacity of background elements */
+.modal-active {
+    opacity: 0.3;
+    pointer-events: none; /* Prevent interactions with background elements */
+}
+
+.slick-prev, .slick-next {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    position: absolute !important;
+    top: 50% !important;
+    display: block !important;
+    width: 40px !important;
+    padding: 0 !important;
+    -webkit-transform: translate(0, -50%) !important;
+    -ms-transform: translate(0, -50%) !important;
+    transform: translate(0, -50%) !important;
+    cursor: pointer !important;
+    color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
 }

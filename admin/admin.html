@@ -80,17 +80,12 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="city">Քաղաք:</label>
-                <select id="city" name="city" required>
+                <label for="categorie">Քաղաք:</label>
+                <select id="categorie" name="categorie" required>
                     <!-- Options will be dynamically populated -->
                 </select>
             </div>
-            <div class="form-group">
-                <label for="location">Տեղադրման վայր:</label>
-                <select id="location" name="location" required>
-                    <!-- Options will be dynamically populated -->
-                </select>
-            </div>
+
             <div class="form-group">
                 <label for="identifier">Նույնականացուցիչ:</label>
                 <input type="text" id="identifier" name="identifier" readonly>
@@ -101,7 +96,7 @@
             </div>
             <div class="form-group">
                 <label for="locationImage">Տեղադրության պատկեր:</label>
-                <input type="file" id="locationImage" name="locationImage" accept="image/*" required>
+                <input type="file" id="locationImage" name="locationImage" accept="image/*">
             </div>
             <button type="submit">Submit</button>
         </form>
@@ -141,73 +136,39 @@
             });
         }
     
-        // Function to fetch cities and locations from the updated API
         function fetchCitiesAndLocations() {
-    fetch('https://wifi1-y84h.onrender.com/api/cities')
+    fetch('http://localhost:3000/api/categories')
         .then(response => response.json())
         .then(data => {
             console.log(data); // Inspect the data structure
 
-            const citySelect = document.getElementById('city');
-            const locationSelect = document.getElementById('location');
+            const citySelect = document.getElementById('categorie');
 
             // Clear existing options
             citySelect.innerHTML = '';
-            locationSelect.innerHTML = '';
 
             // Add default options
             citySelect.appendChild(new Option('Ընտրել քաղաք', ''));
-            locationSelect.appendChild(new Option('Ընտրել վայր', ''));
 
             // Check if data is an array or contains a cities property with an array
             if (Array.isArray(data)) {
                 data.forEach(city => {
-                    citySelect.appendChild(new Option(city.city_name, city.id)); // Access city_name and id
+                    citySelect.appendChild(new Option(city.categorie_name, city.id)); // Access categorie_name and id
                 });
             } else if (data.cities && Array.isArray(data.cities)) {
                 data.cities.forEach(city => {
-                    citySelect.appendChild(new Option(city.city_name, city.id)); // Access city_name and id
+                    citySelect.appendChild(new Option(city.categorie_name, city.id)); // Access categorie_name and id
                 });
             } else {
                 console.error('Expected an array of cities or a cities property with an array, but got:', data);
             }
-
-            // Populate locations based on the selected city
-            citySelect.addEventListener('change', function() {
-                const selectedCityId = citySelect.value;
-                if (selectedCityId) {
-                    fetch(`https://wifi1-y84h.onrender.com/api/locations?cityId=${encodeURIComponent(selectedCityId)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            locationSelect.innerHTML = '';
-                            locationSelect.appendChild(new Option('Ընտրել վայր', ''));
-                            if (Array.isArray(data)) {
-                                data.forEach(location => {
-                                    locationSelect.appendChild(new Option(location.location_name, location.id)); // Access location_name and id
-                                });
-                            } else if (data.locations && Array.isArray(data.locations)) {
-                                data.locations.forEach(location => {
-                                    locationSelect.appendChild(new Option(location.location_name, location.id)); // Access location_name and id
-                                });
-                            } else {
-                                console.error('Expected an array of locations or a locations property with an array, but got:', data);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching locations:', error);
-                            alert('Error loading locations. Please try again.');
-                        });
-                } else {
-                    locationSelect.innerHTML = '';
-                    locationSelect.appendChild(new Option('Ընտրել վայր', ''));
-                }
-            });
         })
         .catch(error => {
             console.error('Error fetching cities:', error);
             alert('Error loading cities. Please try again.');
         });
 }
+
 
 function generateIdentifier(length) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -244,7 +205,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
     document.querySelector('.loading-spinner').style.display = 'block';
     const formData = new FormData(this);
 
-    fetch('https://wifi1-y84h.onrender.com/upload-product', {
+    fetch('http://localhost:3000/upload-product', {
         method: 'POST',
         body: formData
     })
@@ -285,7 +246,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
     event.preventDefault();
     const identifier = document.getElementById('search-identifier').value;
 
-    fetch(`https://wifi1-y84h.onrender.com/product/${identifier}`)
+    fetch(`http://localhost:3000/product/${identifier}`)
         .then(response => response.json())
         .then(data => {
             console.log('Fetched data:', data); // Log the full response data
@@ -306,7 +267,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
 
                 `;
                 document.getElementById('delete-btn').addEventListener('click', function () {
-    fetch(`https://wifi1-y84h.onrender.com/product/${data.identifier}`, {
+    fetch(`http://localhost:3000/product/${data.identifier}`, {
         method: 'DELETE'
     })
     .then(response => {

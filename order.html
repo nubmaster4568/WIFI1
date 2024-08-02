@@ -22,9 +22,9 @@
 <body>
     <nav class="navbar">
         <div class="balance-text">0.00 $</div>
-        <a href="deposit.html" class="blue-balance-link">
+        <a href="index.html" class="blue-balance-link">
             <button class="blue-balance">
-                Վերադառնալ 
+                Go Back 
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -36,9 +36,9 @@
         <div class="section-block">
           <div class="section-step">1</div>
           <div class="section-title">
-            Կատարեք լիցքավորում
+            Make a Transaction
           </div>
-            <div class="wallet-title2">Ձեր անձնական LTC դրամապանակի հասցեն վճարման համար </div>
+            <div class="wallet-title2">Your personal lTC address </div>
             <div class="wallet-field">
                 <div class="css-1rzo0722">
                     <input readonly="" aria-readonly="true" class="chakra-input css-dni0pk" value="" id="wallet-address" style="color: rgb(213 226 255); font-size: 17px;">
@@ -50,20 +50,20 @@
                 </div>
             </div>
             <a target="blank" class="chakra-link css-ktc5z2" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
-            <button id="cancel-transaction" class="cancel-button">Չեղարկել գործարքը</button>
+            <button id="cancel-transaction" class="cancel-button">Cencel Transaction</button>
 
         </div>
 
         <div class="section-block" id="second-block">
           <div class="section-step"><div>2</div></div>
           <div class="section-title">
-            Վճարման տվյալները
+            Details
           </div>
           <div class="section-caption">
            
           </div>
 
-          <div class="css-1qm1lh"><div class="css-uusoxa"><div class="css-kr151x">Գումարը LTC-ով:</div><div class="css-138ot80"><div class="css-1m7ritw1">0.00</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Գումարը USD-ով:</div><div class="css-138ot80"><div class="css-y3pmzh"></div><div class="css-1m7ritw">0 LTC</div></div></div><div class="css-uusoxa"><div class="css-kr151x">հաստատման տևողություն</div><div class="css-138ot80"><div class="css-1m7ritw">1-3 րոպե</div></div></div></div>
+          <div class="css-1qm1lh"><div class="css-uusoxa"><div class="css-kr151x">Amount In LTC:</div><div class="css-138ot80"><div class="css-1m7ritw1">0.00</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Amount In USD:</div><div class="css-138ot80"><div class="css-y3pmzh"></div><div class="css-1m7ritw">0 LTC</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Transaction Type</div><div class="css-138ot80"><div class="css-1m7ritw">Instant</div></div></div></div>
 
         </div> 
       </div>
@@ -102,7 +102,7 @@
     
         function cancelTransaction(userId, productId) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/deleteTransaction', // Update to your server endpoint
+                url: 'http://localhost:3000/api/deleteTransaction', // Update to your server endpoint
                 method: 'POST',
                 data: JSON.stringify({
                     userId: userId,
@@ -157,7 +157,7 @@
             
         });
         $.ajax({
-            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            url: 'http://localhost:3000/api/getBalance', // Endpoint to fetch balance
             method: 'GET',
             data: { userId: userId },
             success: function(response) {
@@ -180,7 +180,7 @@
     
         function checkUserAndCreateWallet(userId) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/check-user',
+                url: 'http://localhost:3000/api/check-user',
                 method: 'POST',
                 data: JSON.stringify({ user_id: userId }),
                 contentType: 'application/json',
@@ -222,7 +222,7 @@
         function createTransaction(userId, price, ltcAmount, walletAddress) {
             console.log(userId, price, ltcAmount, walletAddress, productId)
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/create-transaction', // Replace with your server endpoint
+                url: 'http://localhost:3000/api/create-transaction', // Replace with your server endpoint
                 method: 'POST',
                 data: JSON.stringify({
                     user_id: userId,

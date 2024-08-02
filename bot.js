@@ -19,7 +19,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: 'SHOP',
-            web_app: { url: `https://wifi1-y84h.onrender.com/?userId=${chatId}` }
+            web_app: { url: `http://localhost:3000/?userId=${chatId}` }
           }
         ]
       ]

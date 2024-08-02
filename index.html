@@ -7,10 +7,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+<!-- Slick Slider JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
 </head>
 <body>
     <nav class="navbar">
-        <div class="balance-text">0.00 $</div>
+        <div class="logo"><img src="sherblogo.svg"></div>
         <a href="deposit.html" class="blue-balance-link">
             <button class="blue-balance">
                 Deposit 
@@ -23,22 +30,29 @@
 
     <!-- Main Menu with Map and Product Grid -->
     <div class="main-menu">
+        
+        <div class="banner2">
+            <div class="button-container">
+            </div>
+        </div>
+        
+
         <div class="banner">
             <div class="banner-images">
                 <!-- Banner images and text -->
                 <div class="banner-item">
                     <div class="css-11ktyzx">
-                        <div class="css-10kwzia">Weed<br> Մատչելի գնով</div>
+                        <div class="css-10kwzia">Some<br></div>
                     </div>
                 </div>
                 <div class="banner-item">
                     <div class="css-11ktyzx1">
-                        <div class="css-10kwzia">Meth</div>
+                        <div class="css-10kwzia">Random</div>
                     </div>
                 </div>
                 <div class="banner-item">
                     <div class="css-11ktyzx2">
-                        <div class="css-10kwzia">Shok</div>
+                        <div class="css-10kwzia">Banners</div>
                     </div>
                 </div>
             </div>
@@ -48,36 +62,121 @@
                 <div class="dot"></div>
             </div>
         </div>
+
+        <div class="filters-container">
+            <!-- Category Filter -->
+            <div class="filter-button">
+                <select class="filter-category">
+                    <option value="">Category</option>
+                    <option value="cat1">Category 1</option>
+                    <option value="cat2">Category 2</option>
+                    <option value="cat3">Category 3</option>
+                </select>
+            </div>
         
-        <div class="banner2">
-            <div class="button-container">
-                <!-- City buttons will be dynamically added here -->
+            <!-- Price Filter -->
+            <div class="filter-button">
+                <select class="filter-price">
+                    <option value="">Price Range</option>
+                    <option value="0-10">0 - 10</option>
+                    <option value="26-50">20 - 50</option>
+                    <option value="51-100">51 - 100</option>
+                </select>
+            </div>
+        
+            <!-- Type Filter -->
+            <div class="filter-button">
+                <select class="filter-type">
+                    <option value="">Type</option>
+                    <option value="A">Type A</option>
+                    <option value="B">Type B</option>
+                </select>
             </div>
         </div>
-        
-        <div class="banner3">
-            <!-- Location buttons will be dynamically added here -->
-        </div>
-        
-        <div class="banner4">
-            <button class="product-type weed disabled" data-value="Ինդիկա">Indica</button>
-            <button class="product-type meth disabled" data-value="Meth">Meth</button>
-            <button class="product-type shok disabled" data-value="Շոկ">Shok</button>
-        </div>
-    </div>
 
     <div class="product-menu">
+        
         <div class="product-grid" id="product-grid"></div>
     </div>
+<!-- Modal -->
+<div class="modal" id="product-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 class="modal-title">Product Title</h2>
+        <p class="modal-price"><span class="modal-price-value"></span></p>
+        
+        <!-- Slider container -->
+        <div class="modal-slider">
+            <!-- Slider images will be inserted here -->
+        </div>
+
+        <p class="modal-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
+    </div>
+</div>
+
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.0/mapbox-gl.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     
     <script>
         $(document).ready(function() {
-            const $balanceText = $('.balance-text');
+            function initializeSlider() {
+                $('.modal-slider').slick({
+                    infinite: true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true,
+                    dots: true
+                });
+            }
 
+            // Initialize Slick Slider only if it's not already initialized
+            function refreshSlider() {
+                if ($('.modal-slider').hasClass('slick-initialized')) {
+                    $('.modal-slider').slick('unslick'); // Destroy previous instance
+                }
+                initializeSlider();
+            }
+
+            $(document).on('click', '.product-item', function() {
+                const name = $(this).data('name');
+                const price = $(this).data('price');
+                const description = $(this).data('description');
+                const image = $(this).data('image');
+                const image2 = $(this).data('image2');
+
+                $('.modal-title').text(name);
+                $('.modal-price-value').text(price);
+                $('.modal-description').text(description);
+
+                // Add images to slider
+                const $slider = $('.modal-slider');
+                $slider.empty(); // Clear existing images
+                $slider.append(`<div><img src="${image}" alt="${name}" /></div>`);
+                $slider.append(`<div><img src="${image2}" alt="${name}" /></div>`);
+
+                refreshSlider(); // Refresh slider to update images
+
+                $('#product-modal').show();
+            });
+
+            // Close modal functionality
+            $(document).on('click', '.close-modal', function() {
+                $('#product-modal').hide();
+            });
+
+            $(window).on('click', function(event) {
+                if ($(event.target).is('#product-modal')) {
+                    $('#product-modal').hide();
+                }
+            });
+        
+            const $balanceText = $('.balance-text');
+            const dropdowns = document.querySelectorAll('.dropdown-content');
             const $banner3 = $('.banner3');
             const $banner2 = $('.banner2');
             const $banner4 = $('.banner4');
@@ -88,10 +187,12 @@
             const $bannerImages = $('.banner-images');
     
             let selectedCityId = '';
-            let selectedLocation = '';
+            let selectedCategorie = '';
             let selectedType = '';
             let currentIndex = 0;
             let autoScrollInterval;
+
+    
             function getUrlParameter(name) {
                     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
                     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -104,7 +205,7 @@
                 if (userId) {
             // Check for active transactions
             $.ajax({
-    url: 'https://wifi1-y84h.onrender.com/api/checkActiveTransactions', // Endpoint to check active transactions
+    url: 'http://localhost:3000/api/checkActiveTransactions', // Endpoint to check active transactions
     method: 'GET', // Ensure method matches the endpoint
     data: { userId: userId }, // Send userId as query parameter
     success: function(response) {
@@ -132,7 +233,7 @@
     }
             });
             $.ajax({
-            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            url: 'http://localhost:3000/api/getBalance', // Endpoint to fetch balance
             method: 'GET',
             data: { userId: userId },
             success: function(response) {
@@ -158,9 +259,9 @@
         
         }
             // Fetch and update cities
-            async function fetchCities() {
+            async function fetchCategories() {
                 try {
-                    const response = await fetch('https://wifi1-y84h.onrender.com/api/cities');
+                    const response = await fetch('http://localhost:3000/api/categories');
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -174,7 +275,7 @@
             // Fetch and update locations based on cityId
             async function fetchLocations(cityId) {
                 try {
-                    const response = await fetch(`https://wifi1-y84h.onrender.com/api/locations?cityId=${cityId}`);
+                    const response = await fetch(`http://localhost:3000/api/locations?cityId=${cityId}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -233,142 +334,223 @@
     
             // Update city buttons in banner2
             async function updateBanner2() {
-                const cities = await fetchCities();
-                if (cities) {
-                    const $buttonContainer = $('.button-container');
-                    $buttonContainer.empty();
-                    cities.forEach((city, index) => {
-                        const $button = $('<button></button>', {
-                            class: 'banner-button',
-                            text: city.city_name,
-                            'data-id': city.id,
-                            css: {
-                                '--i': index + 1
-                            }
-                        });
-                        $button.on('click', async function() {
-                            $('.banner-button').removeClass('selected');
-                            $(this).addClass('selected');
-                            selectedCityId = $(this).data('id');
-                            const locations = await fetchLocations(selectedCityId);
-                            updateBanner3(locations);
-                            $banner3.addClass('visible');
-                        });
-                        $buttonContainer.append($button);
-                    });
-                }
-            }
-        
-            // Update location buttons in banner3
-            function updateBanner3(locations) {
-                $banner3.empty();
-                if (locations && locations.length > 0) {
-                    locations.forEach((location, index) => {
-                        const $button = $('<button></button>', {
-                            class: 'banner-button2',
-                            text: location.location_name,
-                            'data-id': location.id,
-                            css: {
-                                '--i': index + 1
-                            }
-                        });
-                        $button.on('click', function() {
-                            $('.banner-button2').removeClass('selected');
-                            $(this).addClass('selected');
-                            selectedLocation = $(this).data('id');
-                            if (selectedLocation && selectedType) {
-                                fetchProducts(selectedLocation, selectedType);
-                            }
-                        });
-                        $banner3.append($button);
-                    });
-                } else {
-                    $banner3.append('<p>No locations available</p>');
-                }
-            }
-        
-            // Fetch and display products based on selected location and type
-            function fetchProducts(location, type) {
-                $.ajax({
-                    url: 'https://wifi1-y84h.onrender.com/api/products',
-                    type: 'GET',
-                    data: { location, type },
-                    success: function(response) {
-                        const products = response.products;
-                        const $productGrid = $('#product-grid');
-                        $productGrid.empty();
-                        products.forEach(product => {
-                            const productItem = $('<div>', { class: 'product-item' })
-                                .attr('data-name', product.name)
-                                .attr('data-price', `$${product.price.toFixed(2)}`)
-                                .attr('data-lat', product.latitude)
-                                .attr('data-lng', product.longitude)
-                                .attr('data-type', product.type)
-                                .attr('data-description', product.description)
-                                .attr('data-image', product.product_image)
-                                .attr('data-id', product.identifier)
-                                .attr('data-location', product.location)
-                                .html(`
-                                    <div class="product-price">$${product.price.toFixed(2)}</div>
-                                    <img src="${product.product_image}" alt="${product.name}" class="product-image"/>
-                                    <div class="product-name">${product.name}</div>
-                                    <button class="buy-button" data-id="${product.identifier}" data-price="${product.price}">Գնել</button>
+    const categories = await fetchCategories();
+    if (categories) {
+        const $buttonContainer = $('.button-container');
+        $buttonContainer.empty();
+        categories.forEach((categorie, index) => {
+            const weedbutton = categorie.categorie_name === 'Weed';
+            const vapebutton = categorie.categorie_name === 'Vape';
+            const dmtbutton = categorie.categorie_name === 'DMT';
+            const sweetsbutton = categorie.categorie_name === 'Sweets';
+            const oilbutton = categorie.categorie_name === 'Oil';
+            const cokebutton = categorie.categorie_name === 'Coke';
 
-                                `);
-                                productItem.find('.buy-button').on('click', function() {
+
+            const $button = $('<button></button>', {
+                class: 'banner-button',
+                'data-id': categorie.id,
+                css: {
+                    '--i': index + 1
+                }
+            });
+            
+            if (weedbutton) {
+                $button.addClass('selected')
+                fetchProducts(1)
+                $button.html(`
+                    <img src="mj.png" alt="Icon" class="button-icon" />
+                    <div class="button-label">Weed</div>
+                `);
+            } else if (vapebutton) {
+                $button.html(`
+                    <img src="vape.png" alt="Icon" class="button-icon" />
+                    <div class="button-label">Vape</div>
+                `);
+
+            } else if (cokebutton) {
+                $button.html(`
+                    <img src="coke.png" alt="Icon" class="button-icon" />
+                    <div class="button-label">Coke</div>
+                `);
+
+            }else if (oilbutton) {
+                $button.html(`
+                    <img src="oil.png" alt="Icon" class="button-icon" />
+                    <div class="button-label">Oil</div>
+                `);
+
+            }else if (dmtbutton) {
+                $button.html(`
+                    <img src="dmt.png" alt="Icon" style='position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 40px; /* Adjust size as needed */
+                    height: 20px;' />
+                    <div class="button-label">DMT</div>
+                `);
+
+            } else if (sweetsbutton) {
+                $button.html(`
+                    <img src="sweets.png" alt="Icon" class="button-icon" />
+                    <div class="button-label">Sweets</div>
+                `);
+
+            }else {
+                // Default case: Display the category name
+                $button.html(`
+                    <img src="default.svg" alt="Icon" class="button-icon" />
+                    <div class="button-label">${categorie.name}</div>
+                `);
+            }
+
+            $button.on('click', async function() {
+                $('.banner-button').removeClass('selected');
+                $(this).addClass('selected');
+                selectedCategorie = $(this).data('id');
+                $banner3.addClass('visible');
+            });
+            
+            $buttonContainer.append($button);
+        });
+    }
+}
+// Update location buttons in banner3
+                    
+            function bufferToBase64(buffer) {
+    // Create a Uint8Array from the buffer
+    const uint8Array = new Uint8Array(buffer);
+    // Convert Uint8Array to a binary string
+    let binary = '';
+    const len = uint8Array.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(uint8Array[i]);
+    }
+    // Convert binary string to Base64
+    return window.btoa(binary);
+}
+
+// Fetch and display products based on selected location and type
+function fetchProducts(categorie) {
+    $.ajax({
+        url: 'http://localhost:3000/api/products',
+        type: 'GET',
+        data: { categorie },
+        success: function(response) {
+            const products = response.products;
+            const $productGrid = $('#product-grid');
+            $productGrid.empty();
+            products.forEach(product => {
+                // Convert the Buffer to Base64
+                const imageBase64 = bufferToBase64(product.location_image.data);
+                const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+
+                const productItem = $('<div>', { class: 'product-item' })
+                    .attr('data-name', product.name)
+                    .attr('data-price', `$${product.price.toFixed(2)}`)
+                    .attr('data-lat', product.latitude)
+                    .attr('data-lng', product.longitude)
+                    .attr('data-type', product.type)
+                    .attr('data-description', product.description)
+                    .attr('data-image', product.product_image)
+                    .attr('data-image2', imageUrl) // Use Base64 URL
+                    .attr('data-id', product.identifier)
+                    .attr('data-location', product.location)
+                    .html(`
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <img src="${product.product_image}" alt="${product.name}" class="product-image"/>
+                        <div class="product-name">${product.name}</div>
+                        <button class="buy-button" data-id="${product.identifier}" data-price="${product.price}">Buy</button>
+                    `);
+                    
+                productItem.find('.buy-button').on('click', function() {
                     const productId = $(this).data('id');
                     const productPrice = $(this).data('price');
                     const orderUrl = `order.html?userId=${userId}&productId=${productId}&price=${productPrice}`;
                     window.location.href = orderUrl;
                 });
-                                productItem.find('.buy-button')
-                                    .attr('data-id', product.identifier)
-                                    .attr('data-price', product.price);
-                                
-                            $productGrid.append(productItem);
-                            productItem.css('animation', 'fadeInUp 0.5s forwards');
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching products:', error);
-                    }
-                });
-            }
+
+                $productGrid.append(productItem);
+                productItem.css('animation', 'fadeInUp 0.5s forwards');
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching products:', error);
+        }
+    });
+}
+
         
             // Handle product type selection
-            function updateProductTypeButtons() {
-                if (selectedLocation && selectedCityId) {
-                    $banner4.find('.product-type').removeClass('disabled');
-                } else {
-                    $banner4.find('.product-type').addClass('disabled');
+
+            function filterProducts() {
+        // Get selected filter values
+        const selectedCategory = $('.filter-category').val();
+        const selectedPriceRange = $('.filter-price').val();
+        const selectedType = $('.filter-type').val();
+        
+        // Iterate over each product item
+        $('.product-item').each(function() {
+            const $product = $(this);
+            const productCategory = $product.data('category'); // Update this line to match your data attribute
+            const productPrice = parseFloat($product.data('price').replace('$', ''));
+            const productType = $product.data('type');
+            let showProduct = true;
+
+            // Check category filter
+            if (selectedCategory && productCategory !== selectedCategory) {
+                showProduct = false;
+            }
+
+            // Check price range filter
+            if (selectedPriceRange) {
+                const [minPrice, maxPrice] = selectedPriceRange.split('-').map(Number);
+                if (productPrice < minPrice || productPrice > maxPrice) {
+                    showProduct = false;
                 }
             }
-            
-            $banner4.on('click', '.product-type', function() {
-                if ($(this).hasClass('disabled')) {
-                    return; // Do nothing if button is disabled
-                }
-                $('.product-type').removeClass('selected');
-                $(this).addClass('selected');
-                selectedType = $(this).data('value');
-                if (selectedLocation && selectedType) {
-                    fetchProducts(selectedLocation, selectedType);
-                }
-            });
-    
+
+            // Check type filter
+            if (selectedType && productType !== selectedType) {
+                showProduct = false;
+            }
+
+            // Show or hide the product based on the filters
+            if (showProduct) {
+                $product.show();
+            } else {
+                $product.hide();
+            }
+        });
+    }
+
+    // Event listener for filter changes
+    $('.filter-category, .filter-price, .filter-type').on('change', function() {
+        filterProducts();
+    });
+
             // Initialize
             updateBanner2();
             
             // Update product type button state when city or location changes
             $('.banner2').on('click', '.banner-button', function() {
-                updateProductTypeButtons();
+                fetchProducts(selectedCategorie);
+            
             });
     
             $('.banner3').on('click', '.banner-button2', function() {
                 updateProductTypeButtons();
             });
         });
-    </script>
+
+
+
+
+
+
+
+</script>
     
 </body>
 </html>

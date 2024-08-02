@@ -23,7 +23,7 @@
         <div class="balance-text">0.00 $</div>
         <a href="index.html" class="blue-balance-link">
             <button class="blue-balance">
-                Վերադարնալ
+                Go Back
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -32,9 +32,9 @@
     </nav>
 
     <div class="deposit-content">
-        <div class="deposit-text">Իմ հաշիվը</div>
+        <div class="deposit-text">My Balance</div>
         <div class="wallet-block">
-            <div class="wallet-title">Ձեր անձնական LTC դրամապանակի հասցեն լիցքավորումների համար </div>
+            <div class="wallet-title">Your Personal LTC address</div>
             <div class="wallet-field">
                 <div class="css-1rzo072">
                     <input 
@@ -67,12 +67,11 @@
                     </button>
                 </div>
             </div>
-            <a target="blank" class="chakra-link css-ktc5z7" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
         </div>
     </div>
 
     <div class="deposit-content2">
-        <div class="deposit-text">Պատմություն</div>
+        <div class="deposit-text">History</div>
         <div class="wallet-block2">
 
 
@@ -111,7 +110,7 @@
                 }
             });
             $.ajax({
-            url: 'https://wifi1-y84h.onrender.com/api/getBalance', // Endpoint to fetch balance
+            url: 'http://localhost:3000/api/getBalance', // Endpoint to fetch balance
             method: 'GET',
             data: { userId: userId },
             success: function(response) {
@@ -136,7 +135,7 @@
         // Function to check user and create wallet
         function checkUserAndCreateWallet(userId) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/check-user',
+                url: 'http://localhost:3000/api/check-user',
                 method: 'POST',
                 data: JSON.stringify({ user_id: userId }),
                 contentType: 'application/json',
@@ -168,7 +167,7 @@
         // Function to fetch user transactions
         function fetchTransactions(walletAddress) {
             $.ajax({
-                url: 'https://wifi1-y84h.onrender.com/api/get-user-transactions',
+                url: 'http://localhost:3000/api/get-user-transactions',
                 method: 'POST',
                 data: JSON.stringify({ address: walletAddress,userId:userId}),
                 contentType: 'application/json',

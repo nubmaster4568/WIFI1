@@ -92,13 +92,13 @@ client.query(`CREATE TABLE IF NOT EXISTS locations (
 
 
 
-app.get('/api/cities', async (req, res) => {
+app.get('/api/categories', async (req, res) => {
     try {
         // Log the start of the request
-        console.log('Received request for /api/cities');
+        console.log('Received request for /api/categories');
 
         // Fetch cities from the database
-        const result = await client.query('SELECT id, city_name FROM cities'); // Adjust as needed
+        const result = await client.query('SELECT id, categorie_name FROM categ'); // Adjust as needed
 
         // Log the fetched cities
         console.log('Fetched cities:', result.rows);
@@ -264,11 +264,12 @@ app.get('/admins', async (req, res) => {
 });
 // Route to handle uploading product images and location images
 app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'locationImage' }]), async (req, res) => {
-    const { latitude, longitude, weight, price, name, type, location, identifier } = req.body;
+    const { latitude, longitude, weight, price, name, type, categorie, identifier } = req.body;
+    console.log(latitude, longitude, weight, price, name, type, categorie, identifier)
     const productImage = req.files['productImage'] ? req.files['productImage'][0].buffer : null;
     const locationImage = req.files['locationImage'] ? req.files['locationImage'][0].buffer : null;
 
-    if (!productImage || !locationImage) {
+    if (!productImage ) {
         return res.status(400).send('Both images are required.');
     }
 
@@ -285,9 +286,9 @@ app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'lo
             .toBuffer();
 
         await client.query(`
-            INSERT INTO products (latitude, longitude, weight, price, name, type, location, identifier, product_image, location_image)
+            INSERT INTO products (latitude, longitude, weight, price, name, type, categorie, identifier, product_image, location_image)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `, [latitude, longitude, weight, price, name, type, location, identifier, compressedProductImage, compressedLocationImage]);
+        `, [latitude, longitude, weight, price, name, type, categorie, identifier, compressedProductImage, compressedLocationImage]);
 
         res.send('Product successfully uploaded.');
     } catch (err) {
@@ -301,24 +302,15 @@ app.get('/api/products', async (req, res) => {
     console.log('Received request for products');
 
     // Get query parameters
-    const location = req.query.location || '';
-    const type = req.query.type || '';
+    const categorie = req.query.categorie || '';
 
-    // Construct SQL query based on parameters
-    let query = 'SELECT * FROM products WHERE 1=1'; // Base query
-    const queryParams = [];
-    
-    if (location) {
-        query += ' AND location = $1';
-        queryParams.push(location);
-    }
-    if (type) {
-        query += ' AND type = $2';
-        queryParams.push(type);
-    }
+    // Construct SQL query
+    let query = 'SELECT * FROM products WHERE categorie = $1';
+    const queryParams = [categorie];  // Start with the categorie parameter
 
     // Log query for debugging
     console.log('Executing query:', query);
+    console.log('Query parameters:', queryParams);
 
     try {
         // Execute the SQL query
@@ -337,7 +329,13 @@ app.get('/api/products', async (req, res) => {
         rows = rows.map(row => {
             if (row.product_image) {
                 row.product_image = `data:image/png;base64,${Buffer.from(row.product_image).toString('base64')}`;
-            } else {
+            } else if (row.location_image) { 
+
+                row.location_image = `data:image/png;base64,${Buffer.from(row.location_image).toString('base64')}`;
+
+            }
+                
+                else {
                 row.product_image = ''; // or null
                 console.log('Product image data is missing for row:', row);
             }
@@ -351,6 +349,7 @@ app.get('/api/products', async (req, res) => {
         res.status(500).send('Error retrieving products.');
     }
 });
+
 
 
 // Route to check if a user exists and create a wallet if not
