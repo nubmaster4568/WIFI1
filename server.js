@@ -21,7 +21,7 @@ const botToken = '6943135495:AAG_43_g0BJYcpsPdFliJSXVQz-dit-iyhY'
 // PostgreSQL connection
 
 const client = new Pool({
-    connectionString: 'postgresql://wifi_db_user:yGEtjMFrhK3m0oG8Tc8hglOqn9CaIhLT@dpg-cqj2e9mehbks73c4mh60-a.oregon-postgres.render.com/wifi_db',
+    connectionString: 'postgresql://wifi_db_2_user:9J9HNsfZGya3RgN62tvLdoyiRuvDNewD@dpg-cqlqpm8gph6c73e4n9i0-a.oregon-postgres.render.com/wifi_db_2',
     ssl: { rejectUnauthorized: false }
 });
 client.connect();

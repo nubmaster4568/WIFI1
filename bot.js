@@ -19,7 +19,11 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: 'SHOP',
+<<<<<<< HEAD
             web_app: { url: `https://cockies.onrender.com/?userId=${chatId}` }
+=======
+            web_app: { url: `https://wifi1-5m7j.onrender.com/?userId=${chatId}` }
+>>>>>>> 36e25fd47f3906f20aae1dc36e649e77333af470
           }
         ]
       ]
