@@ -140,7 +140,7 @@ if (orderForm) {
 
         // Send order data to the server
         $.ajax({
-            url: 'http://localhost:3000/api/place-order',
+            url: 'https://wifi1-5m7j.onrender.com/api/place-order',
             method: 'POST',
             data: JSON.stringify(orderData),
             contentType: 'application/json',
@@ -164,7 +164,7 @@ if (orderForm) {
 }
         function checkUserAndCreateWallet(userId) {
             $.ajax({
-                url: 'http://localhost:3000/api/check-user',
+                url: 'https://wifi1-5m7j.onrender.com/api/check-user',
                 method: 'POST',
                 data: JSON.stringify({ user_id: userId }),
                 contentType: 'application/json',

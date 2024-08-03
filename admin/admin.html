@@ -119,7 +119,7 @@
         }
     
         function fetchCitiesAndLocations() {
-    fetch('http://localhost:3000/api/categories')
+    fetch('https://wifi1-5m7j.onrender.com/api/categories')
         .then(response => response.json())
         .then(data => {
             console.log(data); // Inspect the data structure
@@ -187,7 +187,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
     document.querySelector('.loading-spinner').style.display = 'block';
     const formData = new FormData(this);
 
-    fetch('http://localhost:3000/upload-product', {
+    fetch('https://wifi1-5m7j.onrender.com/upload-product', {
         method: 'POST',
         body: formData
     })
@@ -228,7 +228,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
     event.preventDefault();
     const identifier = document.getElementById('search-identifier').value;
 
-    fetch(`http://localhost:3000/product/${identifier}`)
+    fetch(`https://wifi1-5m7j.onrender.com/product/${identifier}`)
         .then(response => response.json())
         .then(data => {
             console.log('Fetched data:', data); // Log the full response data
@@ -249,7 +249,7 @@ document.getElementById('product-form').addEventListener('submit', function (eve
 
                 `;
                 document.getElementById('delete-btn').addEventListener('click', function () {
-    fetch(`http://localhost:3000/product/${data.identifier}`, {
+    fetch(`https://wifi1-5m7j.onrender.com/product/${data.identifier}`, {
         method: 'DELETE'
     })
     .then(response => {
