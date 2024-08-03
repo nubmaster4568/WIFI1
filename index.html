@@ -17,14 +17,10 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo"><img src="sherblogo.svg"></div>
-        <a href="deposit.html" class="blue-balance-link">
-            <button class="blue-balance">
-                Deposit 
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
+        <div class="logo"><img src="realcalilogo.png"></div>
+        <div class="logotext"><img src="logotextreal.png"></div>
+
+            
         </a>
     </nav>
 
@@ -465,9 +461,15 @@ function fetchProducts(categorie) {
                     `);
                     
                 productItem.find('.buy-button').on('click', function() {
+                    
                     const productId = $(this).data('id');
                     const productPrice = $(this).data('price');
-                    const orderUrl = `order.html?userId=${userId}&productId=${productId}&price=${productPrice}`;
+                    const productName = product.name;
+                    const productDescription = encodeURIComponent(product.description);
+                    const productLocation = encodeURIComponent(product.location);
+
+                    const orderUrl = `order.html?productId=${productId}&productPrice=${productPrice}&productName=${productName}&productDescription=${productDescription}&productLocation=${productLocation}`;
+
                     window.location.href = orderUrl;
                 });
 

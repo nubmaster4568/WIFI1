@@ -21,12 +21,11 @@
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #181418;
+    background-color: #ffeee0;
 }
 .sections {
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #151515;
 }
 
 
@@ -172,12 +171,12 @@ body {
 }
 /* Style for selected buttons */
 .banner-button.selected {
-    background: #3729b9;
+    background: #744f4c;
     /* Darker blue or any color you prefer */
 }
 /* Style for selected buttons */
 .banner-button2.selected {
-    background: #3729b9;
+    background: #744f4c;
     /* Darker blue or any color you prefer */
 }
 
@@ -309,7 +308,7 @@ body {
     width: 60px; /* Fixed width */
     height: 60px; /* Fixed height */
     outline: 1px white;
-    background: rgba(67, 63, 94, 0.6);
+    background: rgb(226 172 66);
     border: none;
     color: white;
     padding: 10px 20px;
@@ -317,7 +316,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, opacity 10s ease;
-    box-shadow: rgb(61, 71, 99) 0px 3px;
+    box-shadow: rgb(61, 99, 62) 0px 3px;
     pointer-events: auto;
     flex-shrink: 0;
     display: flex;
@@ -353,7 +352,7 @@ body {
 .button-label {
     margin-top: 60px; /* Adjust spacing as needed */
     font-size: 11px; /* Adjust font size as needed */
-    color: #FFFFFF; /* Adjust color as needed */
+    color: #182218; /* Adjust color as needed */
     text-align: center;
 }
 .banner4 {
@@ -478,10 +477,10 @@ body {
     animation-delay: calc(0.1s * var(--i)); /* Delay for each button */
 }
 .banner-button:hover {
-    background-color: #3729b9; /* Darker blue on hover */
+    background-color: #744f4c; /* Darker blue on hover */
 }
 .banner-button2:hover {
-    background-color: #3729b9; /* Darker blue on hover */
+    background-color: #744f4c; /* Darker blue on hover */
 }
 .button-container .banner-button {
     opacity: 0; /* Initial state for animation */
@@ -495,9 +494,7 @@ body {
     animation: fadeIn 0.5s forwards; /* Apply animation */
 }
 
-.banner-button:hover {
-    background-color: #b73edf; /* Darker blue on hover */
-}
+
 
 
 
@@ -541,10 +538,10 @@ body {
 .product-item .product-name {
     position: relative;
     border-radius: 11px;
-    font-weight: 500;
+    font-weight: 700;
     left: 0;
         padding: 5px;
-    background-color: #5757571a;
+    background-color: #333f351a;
 }
 .product-menu {
     margin-top: 20px;
@@ -552,7 +549,7 @@ body {
     width: calc(100% - 40px);
     max-width: 400px;
     height: 40%;
-    background: rgb(27, 25, 38);
+    background: rgb(65 80 62);
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
@@ -560,21 +557,21 @@ body {
     padding: 10px;
 }
 .product-price {
-    border: solid #383b97;
+    border: solid #744f4c;
     font-weight: 700;
     display: flex;
+    color: white;
     padding: 5px;
     border-radius: 20px;
     padding-bottom: 1;
     margin-bottom: 5px;
     justify-content: center;
-    /* width: 50%; */
-    background-color: #827bca57;
-    box-shadow: 0 4px 80px rgba(124, 112, 255, 0.7);
+    background-color: rgb(138, 73, 36);
+    box-shadow: 0 10px 20px #744f4c;
 }
 .buy-button {
-    border: solid 1px rgb(103 255 126);
-    background-color: #4dc52b9e;
+    border: solid 2px rgb(55 86 60);
+    background-color: #2158129e;
     border-radius: 15px;
     color: white;
     border-radius: 50px;
@@ -584,7 +581,6 @@ body {
     cursor: pointer;
     font-size: 16px;
 }
-
 .product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -599,8 +595,8 @@ body {
     background-color: #5757571a;
 }
 .product-item {
-    background-color: #1a1926;
-    color: white;
+    background-color: #faf6e1;
+    color: black;
     padding: 10px;
     border-radius: 10px;
     text-align: center;
@@ -787,7 +783,13 @@ body {
     font-size: 14px;
     color: white;
 }
-
+#contact-info {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(0, 0, 0);
+}
 .wallet-field button {
     background-color: #007bff;
     color: white;
@@ -1181,7 +1183,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     padding: 24px;
-    background: #25272e;
+    background: #25262e;
     border-radius: 24px;
     margin-top: 24px;
     margin-bottom: 16px;
@@ -1266,6 +1268,10 @@ body {
     height: 60px;
 }
 
+.logotext img {
+    width: 200px;
+}
+
 
 
 
@@ -1296,7 +1302,7 @@ body {
 
 /* Modal content */
 .modal-content {
-    color: white;
+    color: #0f0f0f;
     position: absolute;
     overflow: hidden;
     left: 50%;
@@ -1305,9 +1311,9 @@ body {
     width: 100%;
     max-width: 100%;
     height: 90%;
-    background-color: #1d1c21;
+    background-color: #f5f1de;
     border-radius: 10px;
-    box-shadow: inset 20px 20px 30px rgba(0, 42, 255, 0.08), 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 20px 20px 30px rgb(255 140 0 / 8%), 0 4px 8px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.5s;
     padding: 20px;
     box-sizing: border-box;
@@ -1352,16 +1358,17 @@ body {
     display: flex;
     font-weight: 700;
     font-size: 20px;
-    color: #ffffff;
+    color: rgb(138, 73, 36);
     width: fit-content;
-    background-color: #b07bca57;
+    background-color: #ca9c7b57;
     border-radius: 15px;
     justify-content: center;
     padding: 5px 10px;
-    border: solid #903897;
-    box-shadow: 0 4px 80px rgba(216, 112, 255, 0.7);
+    border: solid #744f4c;
+    box-shadow: 0 4px 80px rgb(36, 138, 61);
     margin: 10px 0;
 }
+
 
 /* Animation keyframes */
 @keyframes slideUp {
@@ -1404,4 +1411,43 @@ body {
     border: none !important;
     outline: none !important;
     background: transparent !important;
+}
+
+
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input, .form-group textarea, .form-group select {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.form-group textarea {
+    resize: vertical;
+}
+.form-group button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.form-group button:hover {
+    background-color: #0056b3;
+}
+
+.container {
+    display: block;
+    max-width: 90%;
+    margin: 0 auto;
 }

@@ -21,51 +21,54 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="balance-text">0.00 $</div>
-        <a href="index.html" class="blue-balance-link">
-            <button class="blue-balance">
-                Go Back 
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
+        <a href="index.html" class="nav-link">
+
+        <div class="logo"><img src="realcalilogo.png"></div>
+        </a>
+        <div class="logotext"><img src="logotextreal.png"></div>
+
+            
         </a>
     </nav>
     
     <div class="sections">
         <div class="section-block">
-          <div class="section-step">1</div>
-          <div class="section-title">
-            Make a Transaction
-          </div>
-            <div class="wallet-title2">Your personal lTC address </div>
-            <div class="wallet-field">
-                <div class="css-1rzo0722">
-                    <input readonly="" aria-readonly="true" class="chakra-input css-dni0pk" value="" id="wallet-address" style="color: rgb(213 226 255); font-size: 17px;">
-                    <button type="button" class="chakra-button css-1flfxcl" id="copy-button">
-                        <svg viewBox="0 0 24 24" focusable="false" class="chakra-icon css-pv6ryy" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15c-.932 0-1.398 0-1.765-.152a2 2 0 01-1.083-1.083C2 13.398 2 12.932 2 12V5.2c0-1.12 0-1.68.218-2.108a2 2 0 01.874-.874C3.52 2 4.08 2 5.2 2H12c.932 0 1.398 0 1.765.152a2 2 0 011.083 1.083C15 3.602 15 4.068 15 5m-2.8 17h6.6c1.12 0 1.68 0 2.108-.218a2 2 0 00.874-.874C22 20.48 22 19.92 22 18.8v-6.6c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C20.48 9 19.92 9 18.8 9h-6.6c-1.12 0-1.68 0-2.108.218a2 2 0 00-.874.874C9 10.52 9 11.08 9 12.2v6.6c0 1.12 0 1.68.218 2.108a2 2 0 00.874.874C10.52 22 11.08 22 12.2 22z"></path>
-                        </svg>
-                    </button>
-                </div>
+            <div class="container">
+                <div id="product-name"></div>
+                <h1>Order Details</h1>
+                <form id="order-form">
+                    <div class="form-group">
+                        <label for="delivery-address">Delivery Address:</label>
+                        <input type="text" id="delivery-address" name="deliveryAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery-location">Delivery Location:</label>
+                        <input type="text" id="delivery-location" name="deliveryLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" required>
+                        <select id="quantity-unit" style="width: 100px;" name="quantityUnit" required>
+                            <option value="lbs">Pounds (lbs)</option>
+                            <option value="grams">Grams</option>
+                            <option value="oz">Ounces (oz)</option>
+                            <option value="qp">Quarter Pound (QP)</option>
+                            <option value="half-pound">Half Pound</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-info">Contact Info (Phone Number or Telegram Username):</label>
+                        <input type="text" id="contact-info" name="contactInfo" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Place Order</button>
+                    </div>
+                </form>
             </div>
-            <a target="blank" class="chakra-link css-ktc5z2" href="https://t.me/ShokoStory"><svg viewBox="0 0 16 16" focusable="false" class="chakra-icon css-1lgem63" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8-8m0 0H6.667M12 4v5.333"></path></svg><div class="css-1e6ma0l">Գնել LTC</div></a>
-            <button id="cancel-transaction" class="cancel-button">Cencel Transaction</button>
 
         </div>
 
-        <div class="section-block" id="second-block">
-          <div class="section-step"><div>2</div></div>
-          <div class="section-title">
-            Details
-          </div>
-          <div class="section-caption">
-           
-          </div>
 
-          <div class="css-1qm1lh"><div class="css-uusoxa"><div class="css-kr151x">Amount In LTC:</div><div class="css-138ot80"><div class="css-1m7ritw1">0.00</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Amount In USD:</div><div class="css-138ot80"><div class="css-y3pmzh"></div><div class="css-1m7ritw">0 LTC</div></div></div><div class="css-uusoxa"><div class="css-kr151x">Transaction Type</div><div class="css-138ot80"><div class="css-1m7ritw">Instant</div></div></div></div>
-
-        </div> 
       </div>
 
 
@@ -82,13 +85,10 @@
         const priceDiv = document.querySelector('.css-1m7ritw');
         const LTCDiv = document.querySelector('.css-1m7ritw1');
         const cancelButton = document.getElementById('cancel-transaction');
-        cancelButton.disabled = true;
         const $balanceText = $('.balance-text');
 
     // Enable the cancel button after 2 seconds
-    setTimeout(() => {
-        cancelButton.disabled = false;
-    }, 2000);
+
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -99,85 +99,69 @@
         const price = getUrlParameter('price');
         const userId = getUrlParameter('userId');
         const productId = getUrlParameter('productId');
-    
-        function cancelTransaction(userId, productId) {
-            $.ajax({
-                url: 'http://localhost:3000/api/deleteTransaction', // Update to your server endpoint
-                method: 'POST',
-                data: JSON.stringify({
-                    userId: userId,
-                    productId: productId
-                }),
-                contentType: 'application/json',
-                success: function(response) {
-                    alert('Գործարքը հաջողությամբ չեղարկվեց:');
-                    window.location.href = `index.html?userId=${userId}`;
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Failed to cancel transaction:', textStatus, errorThrown);
-                    alert('Failed to cancel transaction.');
-                }
-            });
-        }
-    
+        const productname = getUrlParameter('productName');
+
+        document.getElementById('product-name').textContent = `Product Name: ${productname}`;
+
         if (priceDiv) {
             priceDiv.textContent = `${price}`;
         }
     
         if (userId) {
+            $('a').each(function() {
+                var href = $(this).attr('href'); // Get the current href attribute
+                if (href) {
+                    if (href.indexOf('?') !== -1) {
+                        $(this).attr('href', href + '&userId=' + userId);
+                    } else {
+                        $(this).attr('href', href + '?userId=' + userId);
+                    }
+                }
+            });
             sessionStorage.setItem('user', userId);
             checkUserAndCreateWallet(userId);
             updateLinksWithUserId(userId);
         }
-    
+const orderForm = document.getElementById('order-form');
+
+if (orderForm) {
+        orderForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(orderForm);
+        const orderData = {
+            deliveryAddress: formData.get('deliveryAddress'),
+            deliveryLocation: formData.get('deliveryLocation'),
+            quantity: formData.get('quantity'),
+            quantityUnit: formData.get('quantityUnit'),
+            contactInfo: formData.get('contactInfo'),
+            chatId: sessionStorage.getItem('user')
+        };
+
+        // Send order data to the server
         $.ajax({
-            url: 'https://api.coingecko.com/api/v3/simple/price',
-            method: 'GET',
-            data: {
-                ids: 'litecoin',
-                vs_currencies: 'usd'
-            },
+            url: 'http://localhost:3000/api/place-order',
+            method: 'POST',
+            data: JSON.stringify(orderData),
+            contentType: 'application/json',
             success: function(response) {
-                if (response.litecoin) {
-                    const ltcprice = response.litecoin.usd;
-                    const amountInLTC = parseFloat(price) / ltcprice;
-                    if (LTCDiv) {
-                        LTCDiv.textContent = `${amountInLTC.toFixed(3)} LTC`;
-                    }
-
-                        createTransaction(userId, price, amountInLTC, sessionStorage.getItem('wallet'));
-
+                if (response.success) {
+                    alert('Order placed successfully!');
+                    // Optionally, clear the form or redirect the user
+                    orderForm.reset();
                 } else {
-                    console.error('Litecoin data not available');
+                    alert('Failed to place order.');
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX request failed:', textStatus, errorThrown);
-            }
-            
-        });
-        $.ajax({
-            url: 'http://localhost:3000/api/getBalance', // Endpoint to fetch balance
-            method: 'GET',
-            data: { userId: userId },
-            success: function(response) {
-                if (response && response.balance !== undefined) {
-                    // Ensure balance is a number
-                    let balance = parseFloat(response.balance);
-                    if (!isNaN(balance)) {
-                        $balanceText.text(`${balance.toFixed(2)} $`);
-                    } else {
-                        console.error('Balance is not a valid number:', response.balance);
-                    }
-                } else {
-                    console.error('Invalid balance response:', response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching balance:', status, error);
+                console.error('Order submission failed:', textStatus, errorThrown);
+                alert('Failed to place order.');
             }
         });
-    
+        window.location.href = 'https://t.me/realcalidirect'
+
+    });
+}
         function checkUserAndCreateWallet(userId) {
             $.ajax({
                 url: 'http://localhost:3000/api/check-user',
@@ -219,30 +203,7 @@
             });
         }
     
-        function createTransaction(userId, price, ltcAmount, walletAddress) {
-            console.log(userId, price, ltcAmount, walletAddress, productId)
-            $.ajax({
-                url: 'http://localhost:3000/api/create-transaction', // Replace with your server endpoint
-                method: 'POST',
-                data: JSON.stringify({
-                    user_id: userId,
-                    price: price,
-                    amount_in_ltc: ltcAmount,
-                    product_id: productId,
-                    wallet_address: walletAddress
-                }),
-                contentType: 'application/json',
-                success: function(response) {
-                    alert('Գործարքը հաջողությամբ ստեղծվեց:');
-                    // Optionally, redirect to a confirmation page or update UI
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Failed to create transaction:', textStatus, errorThrown);
-                    alert('Failed to create transaction.');
-                }
-            });
-        }
-    
+
         if (copyButton) {
             copyButton.addEventListener('click', function() {
                 navigator.clipboard.writeText(walletAddressInput.value)

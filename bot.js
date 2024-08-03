@@ -5,7 +5,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const app = express();
 const port = process.env.PORT || 32020;
 
-const token = '7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk';
+const token = '7399253465:AAEZfwcFTCHU4_HPAgGWYTEUyKtaePboDTE';
 const bot = new TelegramBot(token, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
@@ -19,7 +19,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: 'SHOP',
-            web_app: { url: `http://localhost:3000/?userId=${chatId}` }
+            web_app: { url: `https://cockies.onrender.com/?userId=${chatId}` }
           }
         ]
       ]

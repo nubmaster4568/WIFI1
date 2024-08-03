@@ -15,8 +15,8 @@ const { Telegraf } = require('telegraf');
 const sharp = require('sharp');
 
 // Replace 'YOUR_BOT_TOKEN_HERE' with your actual bot token from BotFather
-const bot = new Telegraf('7209454605:AAHZ90zkTzriPOOUL-F_YEfZz3IaXChiHEk');
-
+const bot = new Telegraf('6943135495:AAG_43_g0BJYcpsPdFliJSXVQz-dit-iyhY');
+const botToken = '6943135495:AAG_43_g0BJYcpsPdFliJSXVQz-dit-iyhY'
 // Create a new instance of the TelegramBot class
 // PostgreSQL connection
 
@@ -218,6 +218,33 @@ async function createWalletAddress(user_id) {
 }
 
 
+app.post('/api/place-order', (req, res) => {
+    const { deliveryAddress, deliveryLocation, quantity, quantityUnit, contactInfo } = req.body;
+
+    // Prepare message content
+    const message = `
+        New Order Details:
+        - Delivery Address: ${deliveryAddress}
+        - Delivery Location: ${deliveryLocation}
+        - Quantity: ${quantity} ${quantityUnit}
+        - Contact Info: ${contactInfo}
+    `;
+
+    // Send message via Telegram bot
+    axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        chat_id: '1903358250',
+        text: message,
+        parse_mode: 'Markdown' // Optional: Use Markdown for formatting
+    })
+    .then(response => {
+        console.log('Message sent:', response.data);
+        res.json({ success: true, message: 'Order placed successfully.' });
+    })
+    .catch(error => {
+        console.error('Error sending message:', error);
+        res.status(500).json({ success: false, message: 'Error sending message.' });
+    });
+});
 
 
 // Route to add or remove admin users
@@ -264,8 +291,7 @@ app.get('/admins', async (req, res) => {
 });
 // Route to handle uploading product images and location images
 app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'locationImage' }]), async (req, res) => {
-    const { latitude, longitude, weight, price, name, type, categorie, identifier } = req.body;
-    console.log(latitude, longitude, weight, price, name, type, categorie, identifier)
+    const { weight, price, name, categorie, identifier } = req.body;
     const productImage = req.files['productImage'] ? req.files['productImage'][0].buffer : null;
     const locationImage = req.files['locationImage'] ? req.files['locationImage'][0].buffer : null;
 
@@ -286,9 +312,9 @@ app.post('/upload-product', upload.fields([{ name: 'productImage' }, { name: 'lo
             .toBuffer();
 
         await client.query(`
-            INSERT INTO products (latitude, longitude, weight, price, name, type, categorie, identifier, product_image, location_image)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `, [latitude, longitude, weight, price, name, type, categorie, identifier, compressedProductImage, compressedLocationImage]);
+            INSERT INTO products (weight, price, name, categorie, identifier, product_image, location_image)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [weight, price, name, categorie, identifier, compressedProductImage, compressedLocationImage]);
 
         res.send('Product successfully uploaded.');
     } catch (err) {

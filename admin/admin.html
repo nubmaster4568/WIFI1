@@ -40,72 +40,54 @@
 
 
     <div class="selection-container">
-        <button id="upload-btn">Ավելացնել ապրանք</button>
-        <button id="search-btn">Որոնել ապրանք</button>
+        <button id="upload-btn">Add Product</button>
+        <button id="search-btn">Search Product</button>
     </div>
 
     <div id="upload-form-container" class="upload-form-container">
-        <h1>Ավելացնել ապրանք</h1>
+        <h1>Add Product</h1>
         <form id="product-form">
+            
             <div class="form-group">
-                <label for="latitude">Լայնություն (Latitude):</label>
-                <input type="text" id="latitude" name="latitude" required>
-            </div>
-            <div class="form-group">
-                <label for="longitude">Երկայնություն (Longitude):</label>
-                <input type="text" id="longitude" name="longitude" required>
-            </div>
-            <div class="form-group">
-                <label for="weight">Քաշը:</label>
+                <label for="weight">Weight:</label>
                 <input type="number" id="weight" name="weight" step="0.01" required>
             </div>
             <div class="form-group">
-                <label for="price">Գին ($):</label>
+                <label for="price">Price ($):</label>
                 <input type="number" id="price" name="price" step="0.01" required>
             </div>
             <div class="form-group">
-                <label for="name">Ապրանքի անվանումը:</label>
+                <label for="name">Product Display Name:</label>
                 <input type="text" id="name" name="name" required>
             </div>
+
             <div class="form-group">
-                <label for="type">Տեսակ:</label>
-                <select id="type" name="type" required>
-                    <option value="Ինդիկա">Ինդիկա</option>
-                    <option value="Սատիվա">Սատիվա</option>
-                    <option value="Քար">Քար</option>
-                    <option value="Կոկաին">Կոկաին</option>
-                    <option value="Lxtz">Lxtz</option>
-                    <option value="LSD">LSD</option>
-                    <option value="Շոկո">Շոկո</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="categorie">Քաղաք:</label>
+                <label for="categorie">Categorie:</label>
                 <select id="categorie" name="categorie" required>
                     <!-- Options will be dynamically populated -->
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="identifier">Նույնականացուցիչ:</label>
+                <label for="identifier">Id:</label>
                 <input type="text" id="identifier" name="identifier" readonly>
             </div>
             <div class="form-group">
-                <label for="productImage">Ապրանքի պատկեր:</label>
+                <label for="productImage">Image 1:</label>
                 <input type="file" id="productImage" name="productImage" accept="image/*" required>
             </div>
             <div class="form-group">
-                <label for="locationImage">Տեղադրության պատկեր:</label>
+                <label for="locationImage">Image 2:</label>
                 <input type="file" id="locationImage" name="locationImage" accept="image/*">
             </div>
             <button type="submit">Submit</button>
         </form>
     </div>
     <div id="search-form-container" class="search-form-container">
-        <h1>Որոնել ապրանք</h1>
+        <h1>Search Product</h1>
         <form id="search-form">
             <div class="form-group">
-                <label for="search-identifier">Նույնականացուցիչ:</label>
+                <label for="search-identifier">Id:</label>
                 <input type="text" id="search-identifier" name="search-identifier" required>
             </div>
             <button type="submit">Search</button>
@@ -148,7 +130,7 @@
             citySelect.innerHTML = '';
 
             // Add default options
-            citySelect.appendChild(new Option('Ընտրել քաղաք', ''));
+            citySelect.appendChild(new Option('Categorie', ''));
 
             // Check if data is an array or contains a cities property with an array
             if (Array.isArray(data)) {
